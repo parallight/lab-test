@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "parallight-test",
+  "description": "Parallight Lab — TEST channel (Claude Code). Marvin's dev ring; points at the test backend (staging branch). Not for learners.",
+  "owner": { "name": "Marvin Gao", "email": "marvin.gao.cs@gmail.com" },
+  "plugins": [
+    {
+      "name": "parallight-lab",
+      "description": "Parallight Lab (TEST). Same plugin as the public release, but points at the test backend (test.lab-agent.parallight.ai).",
+      "category": "development",
+      "source": "./plugins/parallight-lab"
+    }
+  ]
+}
