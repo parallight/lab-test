@@ -2980,7 +2980,7 @@ var require_compile = __commonJS({
       const schOrFunc = root.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve.call(this, root, ref);
+      let _sch = resolve2.call(this, root, ref);
       if (_sch === void 0) {
         const schema = (_a3 = root.localRefs) === null || _a3 === void 0 ? void 0 : _a3[ref];
         const { schemaId } = this.opts;
@@ -3007,7 +3007,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve(root, ref) {
+    function resolve2(root, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -3638,55 +3638,55 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve(baseURI, relativeURI, options) {
+    function resolve2(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
       const resolved = resolveComponent(parse3(baseURI, schemelessOptions), parse3(relativeURI, schemelessOptions), schemelessOptions, true);
       schemelessOptions.skipEscape = true;
       return serialize(resolved, schemelessOptions);
     }
-    function resolveComponent(base, relative, options, skipNormalization) {
+    function resolveComponent(base, relative2, options, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
         base = parse3(serialize(base, options), options);
-        relative = parse3(serialize(relative, options), options);
+        relative2 = parse3(serialize(relative2, options), options);
       }
       options = options || {};
-      if (!options.tolerant && relative.scheme) {
-        target.scheme = relative.scheme;
-        target.userinfo = relative.userinfo;
-        target.host = relative.host;
-        target.port = relative.port;
-        target.path = removeDotSegments(relative.path || "");
-        target.query = relative.query;
+      if (!options.tolerant && relative2.scheme) {
+        target.scheme = relative2.scheme;
+        target.userinfo = relative2.userinfo;
+        target.host = relative2.host;
+        target.port = relative2.port;
+        target.path = removeDotSegments(relative2.path || "");
+        target.query = relative2.query;
       } else {
-        if (relative.userinfo !== void 0 || relative.host !== void 0 || relative.port !== void 0) {
-          target.userinfo = relative.userinfo;
-          target.host = relative.host;
-          target.port = relative.port;
-          target.path = removeDotSegments(relative.path || "");
-          target.query = relative.query;
+        if (relative2.userinfo !== void 0 || relative2.host !== void 0 || relative2.port !== void 0) {
+          target.userinfo = relative2.userinfo;
+          target.host = relative2.host;
+          target.port = relative2.port;
+          target.path = removeDotSegments(relative2.path || "");
+          target.query = relative2.query;
         } else {
-          if (!relative.path) {
+          if (!relative2.path) {
             target.path = base.path;
-            if (relative.query !== void 0) {
-              target.query = relative.query;
+            if (relative2.query !== void 0) {
+              target.query = relative2.query;
             } else {
               target.query = base.query;
             }
           } else {
-            if (relative.path[0] === "/") {
-              target.path = removeDotSegments(relative.path);
+            if (relative2.path[0] === "/") {
+              target.path = removeDotSegments(relative2.path);
             } else {
               if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
-                target.path = "/" + relative.path;
+                target.path = "/" + relative2.path;
               } else if (!base.path) {
-                target.path = relative.path;
+                target.path = relative2.path;
               } else {
-                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative.path;
+                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative2.path;
               }
               target.path = removeDotSegments(target.path);
             }
-            target.query = relative.query;
+            target.query = relative2.query;
           }
           target.userinfo = base.userinfo;
           target.host = base.host;
@@ -3694,7 +3694,7 @@ var require_fast_uri = __commonJS({
         }
         target.scheme = base.scheme;
       }
-      target.fragment = relative.fragment;
+      target.fragment = relative2.fragment;
       return target;
     }
     function equal(uriA, uriB, options) {
@@ -3896,7 +3896,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize,
-      resolve,
+      resolve: resolve2,
       resolveComponent,
       equal,
       serialize,
@@ -6886,9 +6886,9 @@ var require_dist = __commonJS({
 });
 
 // src/index.ts
-import { mkdirSync as mkdirSync3, writeFileSync as writeFileSync3, existsSync as existsSync2 } from "node:fs";
-import { homedir as homedir3 } from "node:os";
-import { join as join3, dirname } from "node:path";
+import { mkdirSync as mkdirSync5, writeFileSync as writeFileSync5, readFileSync as readFileSync5, existsSync as existsSync4, chmodSync as chmodSync2 } from "node:fs";
+import { homedir as homedir5 } from "node:os";
+import { join as join5, dirname as dirname2 } from "node:path";
 
 // ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v3/helpers/util.js
 var util;
@@ -28832,7 +28832,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve) => setTimeout(resolve, pollInterval));
+        await new Promise((resolve2) => setTimeout(resolve2, pollInterval));
         options?.signal?.throwIfAborted();
       }
     } catch (error51) {
@@ -28849,7 +28849,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options ?? {};
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve2, reject) => {
       const earlyReject = (error51) => {
         reject(error51);
       };
@@ -28927,7 +28927,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve(parseResult.data);
+            resolve2(parseResult.data);
           }
         } catch (error51) {
           reject(error51);
@@ -29188,12 +29188,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve2, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve, interval);
+      const timeoutId = setTimeout(resolve2, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -30293,7 +30293,7 @@ var McpServer = class {
     let task = createTaskResult.task;
     const pollInterval = task.pollInterval ?? 5e3;
     while (task.status !== "completed" && task.status !== "failed" && task.status !== "cancelled") {
-      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+      await new Promise((resolve2) => setTimeout(resolve2, pollInterval));
       const updatedTask = await extra.taskStore.getTask(taskId);
       if (!updatedTask) {
         throw new McpError(ErrorCode.InternalError, `Task ${taskId} not found during polling`);
@@ -30942,19 +30942,19 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve) => {
+    return new Promise((resolve2) => {
       const json2 = serializeMessage(message);
       if (this._stdout.write(json2)) {
-        resolve();
+        resolve2();
       } else {
-        this._stdout.once("drain", resolve);
+        this._stdout.once("drain", resolve2);
       }
     });
   }
 };
 
 // ../shared/src/index.ts
-var PARALLIGHT_VERSION = "0.0.0-phase0";
+var PARALLIGHT_VERSION = "0.1.22-phase1";
 
 // src/config.ts
 import { homedir } from "node:os";
@@ -30963,6 +30963,191 @@ var BACKEND_URL = process.env.PARALLIGHT_BACKEND_URL ?? "https://lab-agent.paral
 var AUTH_DIR = join(homedir(), ".parallight");
 var AUTH_FILE = join(AUTH_DIR, "auth.json");
 var LLM_PROXY_URL = `${BACKEND_URL}/api/llm`;
+var SANDBOX_PROXY_URL = `${BACKEND_URL}/api/sandbox/v1`;
+
+// src/lab-tracks.ts
+var LAB_TRACKS = [
+  { key: "prep", label: "\u9884\u4FEE", desc: "\u5F00\u8425\u524D\u6253\u5E95\u5B50(lab 0 \u7CFB\u5217)" },
+  { key: "cohort-1", label: "\u7B2C\u4E00\u671F", desc: "\u7B2C\u4E00\u671F\u8BAD\u7EC3\u8425 \xB7 Agentic Engineering" },
+  { key: "cohort-2", label: "\u7B2C\u4E8C\u671F", desc: "\u7B2C\u4E8C\u671F\u8BAD\u7EC3\u8425 \xB7 \u9AD8\u7EA7\u667A\u80FD\u4F53\u7CFB\u7EDF" }
+];
+var LAB_TRACK_KEYS = LAB_TRACKS.map((t) => t.key);
+var KNOWN_TRACKS = new Set(LAB_TRACKS.map((t) => t.key));
+function labsOfTrack(labs, key) {
+  return labs.filter((l) => l.track === key || l.track == null || !KNOWN_TRACKS.has(l.track));
+}
+
+// src/models-catalog.ts
+import { readFileSync, writeFileSync, mkdirSync, existsSync, chmodSync } from "node:fs";
+import { homedir as homedir2 } from "node:os";
+import { join as join2, dirname } from "node:path";
+var MODEL_CATALOG = [
+  {
+    provider: "Claude (Anthropic)",
+    providerKey: "anthropic",
+    tier: "live",
+    models: [
+      { slug: "claude-opus-4-8", name: "Claude Opus 4.8", input: 5, output: 25, note: "\u6700\u65B0\u65D7\u8230 \xB7 \u6700\u5F3A\u63A8\u7406 \xB7 1M \u4E0A\u4E0B\u6587" },
+      { slug: "claude-opus-4-5", name: "Claude Opus 4.5", input: 5, output: 25, note: "\u4E0A\u4E00\u4EE3\u65D7\u8230" },
+      { slug: "claude-sonnet-5", name: "Claude Sonnet 5", input: 3, output: 15, note: "\u5747\u8861 \xB7 \u65B0(8/31 \u524D introductory $2/$10)" },
+      { slug: "claude-haiku-4-5", name: "Claude Haiku 4.5", input: 1, output: 5, note: "\u6700\u5FEB / \u4FBF\u5B9C" }
+    ]
+  },
+  {
+    provider: "GLM (Z.ai / \u667A\u8C31)",
+    providerKey: "glm",
+    tier: "live",
+    models: [
+      { slug: "glm-5.2", name: "GLM-5.2", input: 1.4, output: 4.4 },
+      { slug: "glm-5", name: "GLM-5", input: 1, output: 3.2 },
+      { slug: "glm-4.7", name: "GLM-4.7", input: 0.6, output: 2.2, note: "\u4FBF\u5B9C lane" }
+    ]
+  },
+  {
+    provider: "Kimi (Moonshot / \u6708\u4E4B\u6697\u9762)",
+    providerKey: "kimi",
+    tier: "live",
+    models: [
+      { slug: "kimi-k2.7-code", name: "Kimi K2.7 Code", input: 0.95, output: 4, note: "\u7F16\u7801\u65D7\u8230" },
+      { slug: "kimi-k2.6", name: "Kimi K2.6", input: 0.95, output: 4 }
+    ]
+  },
+  {
+    provider: "DeepSeek (\u6DF1\u5EA6\u6C42\u7D22)",
+    providerKey: "deepseek",
+    tier: "live",
+    models: [
+      { slug: "deepseek-v4-pro", name: "DeepSeek V4 Pro", input: 0.435, output: 0.87, note: "\u5168\u7403\u4EF7 \xB7 \u65E0\u7F13\u5B58\u6298\u6263" },
+      { slug: "deepseek-v4-flash", name: "DeepSeek V4 Flash", input: 0.14, output: 0.28, note: "\u4FBF\u5B9C / \u5FEB" }
+    ]
+  },
+  {
+    provider: "Qwen (\u963F\u91CC\u901A\u4E49)",
+    providerKey: "qwen",
+    tier: "live",
+    models: [
+      { slug: "qwen3-max", name: "Qwen3 Max", input: 1.2, output: 6, note: "\u6309\u8F93\u5165\u91CF\u5206\u6863\u8BA1\u4EF7" },
+      { slug: "qwen3-coder", name: "Qwen3 Coder", input: 1, output: 5, note: "\u6309\u8F93\u5165\u91CF\u5206\u6863(\u6B64\u4E3A\u57FA\u7840\u6863)" }
+    ]
+  },
+  {
+    provider: "MiniMax",
+    providerKey: "minimax",
+    tier: "live",
+    models: [
+      { slug: "MiniMax-M2", name: "MiniMax M2", input: 0.3, output: 1.2, note: "thinking \u5F3A\u5236\u5F00 / \u65E0\u56FE\u50CF" },
+      { slug: "MiniMax-M2.5", name: "MiniMax M2.5", input: 0.3, output: 1.2 }
+    ]
+  },
+  {
+    provider: "\u9700\u4EE3\u7406(OpenAI \u683C\u5F0F \xB7 \u6682\u4E0D\u53EF\u5207)",
+    providerKey: "proxy",
+    tier: "proxy",
+    models: [
+      { slug: "gpt-5.x", name: "OpenAI GPT-5.x", input: 0, output: 0, note: "\u9700 LiteLLM \u4EE3\u7406" },
+      { slug: "gemini-3", name: "Google Gemini 3", input: 0, output: 0, note: "\u9700 LiteLLM \u4EE3\u7406" },
+      { slug: "grok-4", name: "xAI Grok 4", input: 0, output: 0, note: "\u9700 LiteLLM \u4EE3\u7406" }
+    ]
+  }
+];
+function visibleGroups(opts) {
+  if (opts?.gatewayRouted === false) {
+    return {
+      groups: MODEL_CATALOG.filter((g) => g.providerKey === "anthropic"),
+      note: "\u26A0\uFE0F \u5F53\u524D Claude Code \u672A\u8FDE Parallight \u7F51\u5173(ANTHROPIC_BASE_URL \u4E0D\u662F\u7F51\u5173),\u5916\u90E8\u6A21\u578B(GLM/Kimi/DeepSeek\u2026)\u65E0\u6CD5\u8DEF\u7531,\u8FD9\u91CC\u53EA\u5217 Claude\u3002\u8981\u7528\u5916\u90E8\u6A21\u578B,\u8BF7\u5728 Parallight \u5728\u7EBF\u5B9E\u9A8C\u53F0 / \u914D\u597D\u7F51\u5173\u7684 CC \u91CC\u64CD\u4F5C\u3002"
+    };
+  }
+  const configured = opts?.configured;
+  if (!configured) {
+    return {
+      groups: MODEL_CATALOG,
+      note: "(\u6682\u65F6\u65E0\u6CD5\u786E\u8BA4\u540E\u53F0\u5DF2\u914D\u54EA\u4E9B provider key,\u5148\u5217\u51FA\u5168\u90E8;\u5207\u6362\u524D\u8BF7\u786E\u8BA4\u76EE\u6807 provider \u5DF2\u914D\u3002)"
+    };
+  }
+  const groups = MODEL_CATALOG.filter(
+    (g) => g.providerKey === "anthropic" || g.tier === "live" && configured[g.providerKey] === true
+  );
+  const hidden = MODEL_CATALOG.filter(
+    (g) => g.tier === "live" && g.providerKey !== "anthropic" && configured[g.providerKey] !== true
+  ).map((g) => g.provider);
+  return {
+    groups,
+    note: hidden.length > 0 ? `(\u5DF2\u9690\u85CF\u540E\u53F0\u672A\u914D key \u7684 provider:${hidden.join("\u3001")} \u2014\u2014 \u5728 /admin-provider-keys \u914D\u597D key \u540E\u5373\u51FA\u73B0\u3002)` : ""
+  };
+}
+function switchableSlugs(opts) {
+  const s = /* @__PURE__ */ new Set();
+  for (const g of visibleGroups(opts).groups) {
+    if (g.tier === "live") for (const m of g.models) s.add(m.slug);
+  }
+  return s;
+}
+var price = (n) => n > 0 ? `$${n}` : "\u2014";
+function renderCatalog(currentModel, opts) {
+  const { groups, note } = visibleGroups(opts);
+  const lines = [];
+  lines.push("## \u53EF\u7528\u6A21\u578B / \u4EF7\u683C(input / output)\n");
+  lines.push("> \u5207\u6362:\u4ECE\u4E0B\u9762\u9009\u4E00\u4E2A,\u6211\u5E2E\u4F60\u5199\u8FDB\u8BBE\u7F6E(**\u9700\u91CD\u542F claude \u751F\u6548**)\u3002\n");
+  for (const g of groups) {
+    const badge = g.tier === "live" ? "\u2705 \u53EF\u5207" : "\u{1F50C} \u9700\u4EE3\u7406";
+    lines.push(`
+### ${g.provider} \u2014 ${badge}`);
+    lines.push("| \u6A21\u578B | slug | input | output | \u5907\u6CE8 |");
+    lines.push("|---|---|---|---|---|");
+    for (const m of g.models) {
+      const cur = currentModel && m.slug === currentModel ? " \u2B05\uFE0F\u5F53\u524D" : "";
+      lines.push(`| ${m.name}${cur} | \`${m.slug}\` | ${price(m.input)} | ${price(m.output)} | ${m.note ?? ""} |`);
+    }
+  }
+  if (note) lines.push(`
+${note}`);
+  return lines.join("\n");
+}
+function resolveSettingsPath() {
+  const cwdSettings = join2(process.cwd(), ".claude", "settings.json");
+  try {
+    if (existsSync(cwdSettings)) {
+      const s = JSON.parse(readFileSync(cwdSettings, "utf8"));
+      if (typeof s?.env?.ANTHROPIC_BASE_URL === "string" && s.env.ANTHROPIC_BASE_URL.trim()) {
+        return cwdSettings;
+      }
+    }
+  } catch {
+  }
+  return join2(homedir2(), ".claude", "settings.json");
+}
+function setAgentModel(slug, opts) {
+  if (!switchableSlugs(opts).has(slug)) {
+    if (opts?.gatewayRouted === false) {
+      return {
+        ok: false,
+        msg: `\u300C${slug}\u300D\u4E0D\u80FD\u5207:\u5F53\u524D Claude Code \u672A\u8FDE Parallight \u7F51\u5173,\u53EA\u80FD\u7528 Claude \u5404\u6863\u3002\u5916\u90E8\u6A21\u578B\u8BF7\u5728 Parallight \u5728\u7EBF\u5B9E\u9A8C\u53F0 / \u914D\u597D\u7F51\u5173\u7684 CC \u91CC\u5207(\u6216\u8BA9\u6211\u7528 setup_local_gateway \u5EFA\u4E00\u4E2A\u672C\u5730\u7F51\u5173\u76EE\u5F55)\u3002`
+      };
+    }
+    return {
+      ok: false,
+      msg: `\u300C${slug}\u300D\u5F53\u524D\u4E0D\u53EF\u5207 \u2014\u2014 \u53EF\u80FD\u540E\u53F0\u6CA1\u914D\u8BE5 provider \u7684 key(\u53BB /admin-provider-keys \u914D),\u6216\u5B83\u5C5E\u4E8E\u300C\u9700\u4EE3\u7406\u300D\u5C42\u3002\u5148\u8C03 list_models \u770B\u5F53\u524D\u771F\u6B63\u53EF\u5207\u7684\u6E05\u5355\u3002`
+    };
+  }
+  const path = resolveSettingsPath();
+  let settings = {};
+  try {
+    if (existsSync(path)) settings = JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    settings = {};
+  }
+  const env = settings.env && typeof settings.env === "object" ? settings.env : {};
+  env.ANTHROPIC_MODEL = slug;
+  settings.env = env;
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, JSON.stringify(settings, null, 2) + "\n", { mode: 384 });
+  chmodSync(path, 384);
+  const where = path.startsWith(homedir2()) ? path.replace(homedir2(), "~") : path;
+  return {
+    ok: true,
+    msg: `\u5DF2\u628A\u9ED8\u8BA4\u6A21\u578B\u8BBE\u4E3A ${slug}(\u5199\u5165 ${where})\u3002\u26A0\uFE0F \u9700\u8981**\u91CD\u542F claude**(\u9000\u51FA\u540E\u91CD\u65B0\u8FD0\u884C \`claude\`)\u624D\u751F\u6548,\u5F53\u524D\u4F1A\u8BDD\u4E0D\u53D8\u3002(\u4E0D\u8981\u7528 /model \u5207 \u2014\u2014 Claude Code \u7684 /model \u4E0D\u8BA4\u7F51\u5173\u81EA\u5B9A\u4E49 slug,\u4F1A\u62A5 model not found\u3002)`
+  };
+}
 
 // src/compare-persona.ts
 var COMPARE_MENTOR_PERSONA = `\u4F60\u73B0\u5728\u662F Parallight \u7684\u300CAI \u5B9E\u9A8C\u5BFC\u5E08\u300D\uFF0C\u5E26\u5B66\u5458\u5728\u4E00\u4E2A agent \u5143\u5668\u4EF6\u5B9E\u9A8C\u53F0\u4E0A\u505A\u5BF9\u7167\u5B9E\u9A8C\u3002
@@ -30987,10 +31172,10 @@ var COMPARE_MENTOR_PERSONA = `\u4F60\u73B0\u5728\u662F Parallight \u7684\u300CAI
 \u540C\u4E00\u6B21\u5BF9\u6BD4\u91CC id \u552F\u4E00\u3002`;
 
 // src/auth.ts
-import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs";
+import { readFileSync as readFileSync2, writeFileSync as writeFileSync2, mkdirSync as mkdirSync2, existsSync as existsSync2, rmSync } from "node:fs";
 function saveAuth(data) {
-  mkdirSync(AUTH_DIR, { recursive: true, mode: 448 });
-  writeFileSync(
+  mkdirSync2(AUTH_DIR, { recursive: true, mode: 448 });
+  writeFileSync2(
     AUTH_FILE,
     JSON.stringify({ ...data, saved_at: (/* @__PURE__ */ new Date()).toISOString() }, null, 2),
     {
@@ -30999,15 +31184,15 @@ function saveAuth(data) {
   );
 }
 function loadAuth() {
-  if (!existsSync(AUTH_FILE)) return null;
+  if (!existsSync2(AUTH_FILE)) return null;
   try {
-    return JSON.parse(readFileSync(AUTH_FILE, "utf8"));
+    return JSON.parse(readFileSync2(AUTH_FILE, "utf8"));
   } catch {
     return null;
   }
 }
 function clearAuth() {
-  if (existsSync(AUTH_FILE)) rmSync(AUTH_FILE);
+  if (existsSync2(AUTH_FILE)) rmSync(AUTH_FILE);
 }
 function requireToken() {
   const auth = loadAuth();
@@ -31032,6 +31217,37 @@ async function getJson(path, extraHeaders = {}) {
   });
   return res.json();
 }
+async function getBlob(path, extraHeaders = {}) {
+  const res = await fetch(`${BACKEND_URL}${path}`, {
+    headers: {
+      authorization: `Bearer ${requireToken()}`,
+      "x-parallight-mcp": "1",
+      ...extraHeaders
+    }
+  });
+  const body = Buffer.from(await res.arrayBuffer());
+  return { status: res.status, body, headers: res.headers };
+}
+async function postBlob(path, body, extraHeaders = {}) {
+  const res = await fetch(`${BACKEND_URL}${path}`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${requireToken()}`,
+      "x-parallight-mcp": "1",
+      "content-type": "application/octet-stream",
+      ...extraHeaders
+    },
+    // Node's fetch accepts a Uint8Array body; a Buffer IS a Uint8Array.
+    body: new Uint8Array(body)
+  });
+  let json2;
+  try {
+    json2 = await res.json();
+  } catch {
+    json2 = null;
+  }
+  return { status: res.status, json: json2 };
+}
 async function requestOtp(email3) {
   const r = await postJson("/api/auth/request-otp", { email: email3 });
   if (!r.ok) throw new Error(r.error ?? "Failed to send OTP");
@@ -31052,6 +31268,19 @@ async function verifyOtp(email3, code) {
 async function listLabs() {
   const r = await getJson("/api/labs");
   return r.labs ?? [];
+}
+async function getLatestVersion() {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 2e3);
+    const res = await fetch(`${BACKEND_URL}/api/health`, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const json2 = await res.json();
+    return typeof json2.version === "string" ? json2.version : null;
+  } catch {
+    return null;
+  }
 }
 async function getStarter(labId) {
   const r = await getJson(`/api/labs/${labId}/starter`);
@@ -31126,11 +31355,41 @@ async function postReviewReply(reviewId, body) {
   const r = await res.json();
   if (!r.ok) throw new Error(r.error ?? "reply failed");
 }
-async function openSession(labId, masterId, masterVersion) {
+async function getRealExperiment(labId) {
+  try {
+    const j = await getJson(
+      `/api/experiments/active?lab_id=${encodeURIComponent(labId)}`,
+      { "x-parallight-mcp": "1" }
+    );
+    return {
+      enabled: !!j.enabled,
+      experimentId: j.experiment_id ?? "",
+      ratio: typeof j.ratio === "number" ? j.ratio : 0.5
+    };
+  } catch {
+    return { enabled: false, experimentId: "", ratio: 0.5 };
+  }
+}
+async function getContextPack(labId) {
+  try {
+    const j = await getJson(`/api/labs/${encodeURIComponent(labId)}/context-pack`, {
+      "x-parallight-mcp": "1"
+    });
+    return typeof j.context_pack === "string" ? j.context_pack : "";
+  } catch {
+    return "";
+  }
+}
+async function openSession(labId, masterId, masterVersion, variant = "control") {
   const res = await fetch(`${BACKEND_URL}/api/sessions`, {
     method: "POST",
     headers: mcpHeaders(),
-    body: JSON.stringify({ lab_id: labId, master_id: masterId, master_version: masterVersion })
+    body: JSON.stringify({
+      lab_id: labId,
+      master_id: masterId,
+      master_version: masterVersion,
+      variant
+    })
   });
   const r = await res.json();
   return r.ok ? r.session_id : void 0;
@@ -31231,6 +31490,34 @@ async function getMostRecentSession() {
   }
 }
 
+// src/update-nudge.ts
+var VERSION_RE = /^(\d+)\.(\d+)\.(\d+)(?:-[a-zA-Z0-9]+)?$/;
+function parseVersion(v) {
+  const m = VERSION_RE.exec(v.trim());
+  if (!m) return null;
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+function isOutdated(installed, latest) {
+  const a = parseVersion(installed);
+  const b = parseVersion(latest);
+  if (!a || !b) return false;
+  if (b[0] !== a[0]) return b[0] > a[0];
+  if (b[1] !== a[1]) return b[1] > a[1];
+  return b[2] > a[2];
+}
+function updateBanner(latest) {
+  return [
+    `> \u{1F514} **\u63D2\u4EF6\u6709\u65B0\u7248\u53EF\u7528(${latest})\u3002** \u4F60\u88C5\u7684\u662F\u65E7\u7248,\u53EF\u80FD\u7F3A\u65B0\u547D\u4EE4\u6216\u4FEE\u590D(\u6BD4\u5982 \`/hotspot\`)\u3002`,
+    `> \u66F4\u65B0\u65B9\u6CD5:\u8FD0\u884C \`/plugin marketplace update parallight-cc\`,\u518D \`/reload-plugins\`(\u6216\u91CD\u542F Claude Code)\u3002`
+  ].join("\n");
+}
+function maybeUpdateBanner(installed, latest) {
+  if (!latest) return null;
+  const trimmed = latest.trim();
+  if (!VERSION_RE.test(trimmed)) return null;
+  return isOutdated(installed, trimmed) ? updateBanner(trimmed) : null;
+}
+
 // src/browser.ts
 import { spawn } from "node:child_process";
 import { isAbsolute } from "node:path";
@@ -31255,6 +31542,566 @@ function openInBrowser(filePath) {
   }
 }
 
+// src/hotspots.ts
+var LAB_SITE_URL = process.env.PARALLIGHT_LAB_SITE_URL ?? "https://www.parallight.ai/lab";
+var AGENT_API_BASE = `${LAB_SITE_URL}/api/agent/v1`;
+var SLUG_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,120}$/;
+function isValidSlug(slug) {
+  return SLUG_RE.test(slug) && !slug.includes("..");
+}
+async function fetchHotspots() {
+  const res = await fetch(`${AGENT_API_BASE}/cards?has_try_it=1&include_unverified=1`);
+  if (!res.ok) throw new Error(`cards fetch failed: HTTP ${res.status}`);
+  const j = await res.json();
+  return (j.cards ?? []).filter((c) => c.slug && c.try_it && c.try_it.steps.length > 0);
+}
+function hotspotMarkdown(c) {
+  const steps = c.try_it.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+  const sources = c.source_urls.filter((s) => /^https?:\/\//i.test(s.url ?? "")).map((s) => `- ${s.label || "\u6765\u6E90"}: ${s.url}`).join("\n");
+  const unverified = !c.verified_at;
+  return [
+    `# ${c.title_zh ?? c.slug}`,
+    c.title_en ? `*${c.title_en}*` : null,
+    "",
+    unverified ? "> \u{1F195} **\u65B0\u5185\u5BB9 \xB7 \u7ED3\u679C\u672A\u77E5** \u2014\u2014 \u8FD9\u5F20\u5361\u8FD8\u6CA1\u7ECF\u8FC7\u6C99\u7BB1\u9A8C\u8BC1,\u6B65\u9AA4\u53EF\u80FD\u8DD1\u901A\u4E5F\u53EF\u80FD\u8DD1\u4E0D\u901A,\u81EA\u884C\u5224\u65AD\u540E\u518D\u6267\u884C\u3002" : null,
+    unverified ? "" : null,
+    c.subtitle_zh ?? "",
+    "",
+    c.body_md_zh ?? "",
+    "",
+    "## \u52A8\u624B\u6B65\u9AA4",
+    steps,
+    "",
+    "## \u9A8C\u6536\u671F\u671B(expect)",
+    "```json",
+    JSON.stringify(c.try_it.expect, null, 2),
+    "```",
+    sources ? `
+## \u6765\u6E90
+${sources}` : "",
+    "",
+    `> \u6765\u81EA Parallight \u5C1D\u9C9C\u53F0(${c.verified_at ? "\u5DF2\u6C99\u7BB1\u9A8C\u8BC1 \u2705" : "\u{1F195} \u65B0\u5185\u5BB9,\u672A\u9A8C\u8BC1\xB7\u7ED3\u679C\u672A\u77E5"}) \xB7 slug: ${c.slug}`
+  ].filter((l) => l !== null).join("\n");
+}
+function formatHotspotList(cards) {
+  const status = (c) => c.verified_at ? "\u2705 \u5DF2\u9A8C\u8BC1" : "\u{1F195} \u65B0\u5185\u5BB9\xB7\u7ED3\u679C\u672A\u77E5";
+  const rows = cards.map(
+    (c, i) => `| ${i + 1} | ${c.title_zh ?? c.slug} | ${c.kind ?? "\u2014"} | ${status(c)} | ${(c.published_at ?? "").slice(0, 10)} |`
+  );
+  const table = ["| # | \u70ED\u70B9 | \u7C7B\u578B | \u72B6\u6001 | \u53D1\u5E03 |", "|:--|:----|:----|:----|:----|", ...rows].join("\n");
+  const optionMap = cards.map((c, i) => `${i + 1} \u2192 try_hotspot(slug="${c.slug}")`).join("; ");
+  return { table, optionMap };
+}
+
+// src/lib/local-git.ts
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import {
+  mkdirSync as mkdirSync3,
+  writeFileSync as writeFileSync3,
+  readFileSync as readFileSync3,
+  existsSync as existsSync3,
+  rmSync as rmSync2
+} from "node:fs";
+import { mkdtempSync } from "node:fs";
+import { homedir as homedir3, tmpdir } from "node:os";
+import { join as join3, resolve, relative, isAbsolute as isAbsolute2 } from "node:path";
+var execFileAsync = promisify(execFile);
+var MAX_BUFFER = 64 * 1024 * 1024;
+var DEFAULT_DEPS = { getBlob, postBlob };
+var NoSandboxError = class extends Error {
+  constructor() {
+    super("no cloud sandbox");
+    this.name = "NoSandboxError";
+  }
+};
+var UnpaidError = class extends Error {
+  constructor() {
+    super("not paid");
+    this.name = "UnpaidError";
+  }
+};
+var LockedError = class extends Error {
+  constructor() {
+    super("sync locked");
+    this.name = "LockedError";
+  }
+};
+var SyncError = class extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = "SyncError";
+  }
+};
+function resolveLabDir(cwd, labId) {
+  if (isAbsolute2(labId)) {
+    throw new SyncError(`\u975E\u6CD5 lab id\uFF08\u7EDD\u5BF9\u8DEF\u5F84\uFF09\uFF1A${labId}`);
+  }
+  const labDir = resolve(cwd, labId);
+  const rel = relative(cwd, labDir);
+  if (rel === "" || rel.startsWith("..") || isAbsolute2(rel)) {
+    throw new SyncError(`\u975E\u6CD5 lab id\uFF08\u8D8A\u51FA\u5DE5\u4F5C\u76EE\u5F55\uFF09\uFF1A${labId}`);
+  }
+  return labDir;
+}
+async function git(args, cwd) {
+  try {
+    const { stdout, stderr } = await execFileAsync("git", args, {
+      cwd,
+      maxBuffer: MAX_BUFFER,
+      encoding: "utf8"
+    });
+    return { code: 0, stdout: stdout.trim(), stderr: stderr.trim() };
+  } catch (e) {
+    const err2 = e;
+    return {
+      code: typeof err2.code === "number" ? err2.code : 1,
+      stdout: (err2.stdout ?? "").toString().trim(),
+      stderr: (err2.stderr ?? "").toString().trim()
+    };
+  }
+}
+async function gitOk(args, cwd) {
+  const r = await git(args, cwd);
+  if (r.code !== 0) {
+    throw new SyncError(`git ${args.slice(0, 2).join(" ")} \u5931\u8D25\uFF1A${r.stderr || r.stdout}`);
+  }
+  return r.stdout;
+}
+function syncStateDir(opts) {
+  return opts.syncDir ?? join3(homedir3(), ".parallight");
+}
+function syncStateFile(opts) {
+  return join3(syncStateDir(opts), `sync-${sanitizeId(opts.labId)}.json`);
+}
+function sanitizeId(labId) {
+  return labId.replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+function readSyncState(opts) {
+  const f = syncStateFile(opts);
+  if (!existsSync3(f)) return {};
+  try {
+    return JSON.parse(readFileSync3(f, "utf8"));
+  } catch {
+    return {};
+  }
+}
+function writeSyncState(opts, st) {
+  const dir = syncStateDir(opts);
+  mkdirSync3(dir, { recursive: true });
+  writeFileSync3(
+    syncStateFile(opts),
+    JSON.stringify({ ...st, updatedAt: (/* @__PURE__ */ new Date()).toISOString() }, null, 2)
+  );
+}
+async function ensureLocalRepo(labDir) {
+  mkdirSync3(labDir, { recursive: true });
+  const isRepo = await git(["rev-parse", "--git-dir"], labDir);
+  if (isRepo.code !== 0) {
+    await gitOk(["-c", "init.defaultBranch=main", "init", "-q"], labDir);
+  }
+  const email3 = await git(["config", "user.email"], labDir);
+  if (email3.code !== 0 || !email3.stdout) {
+    await git(["config", "user.email", "lab@parallight.ai"], labDir);
+  }
+  const name = await git(["config", "user.name"], labDir);
+  if (name.code !== 0 || !name.stdout) {
+    await git(["config", "user.name", "Parallight Lab"], labDir);
+  }
+  await git(["symbolic-ref", "HEAD", "refs/heads/main"], labDir);
+}
+async function isDirty2(labDir) {
+  const r = await git(["status", "--porcelain"], labDir);
+  return r.stdout.length > 0;
+}
+async function hasCommit(labDir) {
+  const r = await git(["rev-parse", "--verify", "-q", "HEAD"], labDir);
+  return r.code === 0;
+}
+async function autoCommit(labDir, msg) {
+  await gitOk(["add", "-A"], labDir);
+  await git(["-c", "core.editor=true", "commit", "-q", "-m", msg], labDir);
+}
+function freshTmpBundle() {
+  const dir = mkdtempSync(join3(tmpdir(), "pl-bundle-"));
+  return join3(dir, "x.bundle");
+}
+async function computePlan(labDir, local, cloud) {
+  const base = await gitOk(["merge-base", local, cloud], labDir);
+  const localChanges = await nameStatus(labDir, base, local);
+  const cloudChanges = await nameStatus(labDir, base, cloud);
+  const realConflicts = await mergeTreeConflicts(labDir, local, cloud);
+  const plan = [];
+  for (const [path, c] of cloudChanges) {
+    const l = localChanges.get(path);
+    const change = c === "D" ? "deleted" : c === "A" ? "added" : "modified";
+    const side = l ? "both" : "cloud";
+    const conflict = realConflicts.has(path);
+    const isDelete = c === "D";
+    const confirm = conflict || isDelete;
+    plan.push({ path, change, side, conflict, confirm });
+  }
+  plan.sort((a, b) => a.path.localeCompare(b.path));
+  return plan;
+}
+async function mergeTreeConflicts(labDir, local, cloud) {
+  const r = await git(
+    ["merge-tree", "--write-tree", "-z", "--name-only", local, cloud],
+    labDir
+  );
+  if (r.code === 0) return /* @__PURE__ */ new Set();
+  if (r.code === 1 && r.stdout) {
+    const fields = r.stdout.split("\0");
+    const conflicts = /* @__PURE__ */ new Set();
+    for (let i = 1; i < fields.length; i++) {
+      const f = fields[i];
+      if (f === "" || f === void 0) break;
+      conflicts.add(f);
+    }
+    if (conflicts.size > 0) return conflicts;
+  }
+  return await coarseConflicts(labDir, local, cloud);
+}
+async function coarseConflicts(labDir, local, cloud) {
+  const base = await gitOk(["merge-base", local, cloud], labDir);
+  const localChanges = await nameStatus(labDir, base, local);
+  const cloudChanges = await nameStatus(labDir, base, cloud);
+  const out = /* @__PURE__ */ new Set();
+  for (const [path, c] of cloudChanges) {
+    const l = localChanges.get(path);
+    if (!l) continue;
+    if (l === "D" && c === "D") continue;
+    if (l === "D" || c === "D") {
+      out.add(path);
+      continue;
+    }
+    if (!await sameBlob(labDir, path, local, cloud)) out.add(path);
+  }
+  return out;
+}
+async function nameStatus(labDir, ref1, ref2) {
+  const r = await git(["diff", "--name-status", "-z", ref1, ref2], labDir);
+  const map2 = /* @__PURE__ */ new Map();
+  if (!r.stdout) return map2;
+  const parts = r.stdout.split("\0").filter((s) => s.length > 0);
+  let i = 0;
+  while (i < parts.length) {
+    const status = parts[i] ?? "";
+    const letter = status[0] ?? "";
+    if (letter === "R" || letter === "C") {
+      const newPath = parts[i + 2];
+      if (newPath) map2.set(newPath, "M");
+      const oldPath = parts[i + 1];
+      if (oldPath) map2.set(oldPath, "D");
+      i += 3;
+    } else {
+      const path = parts[i + 1];
+      if (path) map2.set(path, letter);
+      i += 2;
+    }
+  }
+  return map2;
+}
+async function sameBlob(labDir, path, refA, refB) {
+  const a = await git(["rev-parse", `${refA}:${path}`], labDir);
+  const b = await git(["rev-parse", `${refB}:${path}`], labDir);
+  if (a.code !== 0 || b.code !== 0) return false;
+  return a.stdout === b.stdout;
+}
+function mapHttpError(status) {
+  if (status === 402) throw new UnpaidError();
+  if (status === 404) throw new NoSandboxError();
+  if (status === 409) throw new LockedError();
+  if (status === 401) throw new SyncError("\u767B\u5F55\u5931\u6548\uFF0C\u8BF7\u7528 /lab-login \u91CD\u65B0\u767B\u5F55\u3002");
+  throw new SyncError(`\u4E91\u7AEF\u8FD4\u56DE HTTP ${status}`);
+}
+async function labPull(opts, deps = DEFAULT_DEPS) {
+  const cwd = opts.cwd ?? process.cwd();
+  const labDir = resolveLabDir(cwd, opts.labId);
+  await ensureLocalRepo(labDir);
+  if (await isDirty2(labDir)) {
+    await autoCommit(labDir, "local autosave");
+  }
+  const state = readSyncState(opts);
+  const base = state.lastCloudSha;
+  const qs = base ? `?base=${encodeURIComponent(base)}` : "";
+  const res = await deps.getBlob(`/api/lab-sync/pull${qs}`);
+  if (res.status === 204) {
+    const tip = res.headers.get("x-cloud-tip");
+    if (tip) writeSyncState(opts, { lastCloudSha: tip });
+    return {
+      upToDate: true,
+      plan: [],
+      pulledCommits: 0,
+      cloudTip: tip,
+      summary: "\u4E91\u7AEF\u6CA1\u6709\u65B0\u6539\u52A8\uFF0C\u672C\u5730\u5DF2\u662F\u6700\u65B0\u3002"
+    };
+  }
+  if (res.status !== 200) mapHttpError(res.status);
+  const cloudTip = res.headers.get("x-cloud-tip");
+  const isFull = res.headers.get("x-full") === "1";
+  if (!cloudTip) throw new SyncError("\u4E91\u7AEF\u54CD\u5E94\u7F3A\u5C11 x-cloud-tip");
+  const bundlePath = freshTmpBundle();
+  try {
+    writeFileSync3(bundlePath, res.body);
+    const verify = await git(["bundle", "verify", bundlePath], labDir);
+    if (verify.code !== 0) {
+      throw new SyncError(`\u4E91\u7AEF bundle \u6821\u9A8C\u5931\u8D25\uFF1A${verify.stderr || verify.stdout}`);
+    }
+    const localHadCommit = await hasCommit(labDir);
+    if (isFull) {
+      await gitOk(
+        ["fetch", "-q", bundlePath, "refs/heads/*:refs/remotes/cloud/*"],
+        labDir
+      );
+    } else {
+      await gitOk(
+        ["fetch", "-q", bundlePath, "refs/heads/main:refs/remotes/cloud/main"],
+        labDir
+      );
+    }
+    if (!localHadCommit) {
+      await gitOk(["checkout", "-q", "-B", "main", "cloud/main"], labDir);
+      writeSyncState(opts, { lastCloudSha: cloudTip });
+      const n = await countCommits(labDir, base, cloudTip);
+      return {
+        applied: true,
+        plan: [],
+        pulledCommits: n,
+        cloudTip,
+        summary: `\u9996\u6B21\u540C\u6B65\uFF1A\u5DF2\u4ECE\u4E91\u7AEF\u62C9\u53D6\u5E76\u5EFA\u7ACB\u672C\u5730\u4ED3\u5E93\uFF08${n} \u4E2A\u63D0\u4EA4\uFF09\u3002`
+      };
+    }
+    const localTip = await gitOk(["rev-parse", "HEAD"], labDir);
+    const mergeBase = await git(["merge-base", "HEAD", "cloud/main"], labDir);
+    if (mergeBase.code !== 0) {
+      throw new SyncError("\u627E\u4E0D\u5230\u672C\u5730\u4E0E\u4E91\u7AEF\u7684\u5171\u540C\u7956\u5148\uFF08\u5386\u53F2\u4E0D\u76F8\u5173\uFF09\u3002");
+    }
+    const baseSha = mergeBase.stdout;
+    const cloudIsAncestor = await git(
+      ["merge-base", "--is-ancestor", "cloud/main", "HEAD"],
+      labDir
+    );
+    if (cloudIsAncestor.code === 0) {
+      writeSyncState(opts, { lastCloudSha: cloudTip });
+      return {
+        upToDate: true,
+        plan: [],
+        pulledCommits: 0,
+        cloudTip,
+        summary: "\u4E91\u7AEF\u6539\u52A8\u5DF2\u7ECF\u5305\u542B\u5728\u672C\u5730\uFF0C\u65E0\u9700\u5408\u5E76\u3002"
+      };
+    }
+    const pulledCommits = await countCommits(labDir, baseSha, cloudTip);
+    const plan = await computePlan(labDir, localTip, cloudTip);
+    const blockers = plan.filter((p) => p.confirm);
+    const shouldApply = opts.apply === true || blockers.length === 0;
+    if (!shouldApply) {
+      return {
+        needsConfirm: true,
+        plan,
+        pulledCommits,
+        cloudTip,
+        summary: buildPlanSummary(pulledCommits, plan, false)
+      };
+    }
+    const tag = `lab-backup/${timestamp()}`;
+    await git(["tag", tag], labDir);
+    const merge2 = await git(["merge", "--no-edit", "cloud/main"], labDir);
+    const mergedTip = await gitOk(["rev-parse", "HEAD"], labDir);
+    const merged = await git(
+      ["merge-base", "--is-ancestor", cloudTip, mergedTip],
+      labDir
+    );
+    const fullyMerged = merge2.code === 0 && merged.code === 0;
+    if (fullyMerged) {
+      writeSyncState(opts, { lastCloudSha: cloudTip });
+    }
+    const conflictedNow = (await git(["diff", "--name-only", "--diff-filter=U"], labDir)).stdout.split("\n").filter(Boolean);
+    return {
+      applied: fullyMerged,
+      needsConfirm: !fullyMerged,
+      plan,
+      pulledCommits,
+      cloudTip,
+      summary: fullyMerged ? buildPlanSummary(pulledCommits, plan, true) : `\u5DF2\u5F00\u59CB\u5408\u5E76\uFF0C\u4F46\u6709 ${conflictedNow.length} \u4E2A\u6587\u4EF6\u5B58\u5728\u51B2\u7A81\u9700\u8981\u4F60\u89E3\u51B3\uFF1A` + conflictedNow.map((f) => `
+  - ${f}`).join("") + `
+\u89E3\u51B3\u540E\u6211\u4F1A\u5E2E\u4F60\u63D0\u4EA4\u5408\u5E76\u3002\u5907\u4EFD\u6807\u7B7E\uFF1A${tag}`
+    };
+  } finally {
+    rmSync2(bundlePath, { force: true });
+  }
+}
+async function labPush(opts, deps = DEFAULT_DEPS, retriesLeft = 1) {
+  const cwd = opts.cwd ?? process.cwd();
+  const labDir = resolveLabDir(cwd, opts.labId);
+  await ensureLocalRepo(labDir);
+  if (await isDirty2(labDir)) {
+    await autoCommit(labDir, "local autosave");
+  }
+  const pull = await labPull(opts, deps);
+  if (pull.needsConfirm) {
+    return {
+      ok: false,
+      reason: "conflict",
+      cloudTip: pull.cloudTip,
+      summary: "\u63A8\u9001\u524D\u9700\u8981\u5148\u5408\u5E76\u4E91\u7AEF\u6539\u52A8\uFF0C\u4F46\u6709\u51B2\u7A81/\u5220\u9664\u9700\u8981\u4F60\u786E\u8BA4\u3002\u8BF7\u5148\u7528 /lab-pull \u89E3\u51B3\uFF0C\u518D /lab-push\u3002"
+    };
+  }
+  const state = readSyncState(opts);
+  const cloudTip = state.lastCloudSha;
+  if (!cloudTip) {
+    throw new SyncError("\u7F3A\u5C11\u4E91\u7AEF\u57FA\u7EBF\uFF08\u5148 /lab-pull \u4E00\u6B21\uFF09\u3002");
+  }
+  const range = await git(["rev-list", `${cloudTip}..main`], labDir);
+  if (!range.stdout) {
+    return {
+      ok: true,
+      nothingToPush: true,
+      cloudTip,
+      summary: "\u672C\u5730\u6CA1\u6709\u4E91\u7AEF\u7F3A\u5C11\u7684\u63D0\u4EA4\uFF0C\u65E0\u9700\u63A8\u9001\u3002"
+    };
+  }
+  const bundlePath = freshTmpBundle();
+  try {
+    await gitOk(["bundle", "create", bundlePath, `${cloudTip}..main`], labDir);
+    const bytes = readFileSync3(bundlePath);
+    const res = await deps.postBlob("/api/lab-sync/push", bytes, {
+      "x-expected-cloud": cloudTip
+    });
+    if (res.status === 200) {
+      const j = res.json;
+      if (j?.cloudTip) writeSyncState(opts, { lastCloudSha: j.cloudTip });
+      const n = range.stdout.split("\n").filter(Boolean).length;
+      return {
+        ok: true,
+        cloudTip: j?.cloudTip ?? cloudTip,
+        summary: `\u5DF2\u63A8\u9001 ${n} \u4E2A\u63D0\u4EA4\u5230\u4E91\u7AEF\u3002`
+      };
+    }
+    if (res.status === 409) {
+      const j = res.json;
+      if (retriesLeft > 0) {
+        return await labPush(opts, deps, retriesLeft - 1);
+      }
+      return {
+        ok: false,
+        reason: "non_ff",
+        cloudTip: j?.cloudTip ?? null,
+        summary: "\u4E91\u7AEF\u53C8\u6709\u65B0\u6539\u52A8\u4E86\u3002\u8BF7\u91CD\u8DD1 /lab-push\uFF08\u4F1A\u5148\u5408\u5E76\u4E91\u7AEF\u518D\u63A8\u9001\uFF09\u3002"
+      };
+    }
+    if (res.status === 413) {
+      return { ok: false, summary: "\u6539\u52A8\u592A\u5927\uFF0C\u8D85\u8FC7\u5355\u6B21\u63A8\u9001\u4E0A\u9650\uFF0850MB\uFF09\u3002" };
+    }
+    if (res.status === 402) throw new UnpaidError();
+    if (res.status === 404) throw new NoSandboxError();
+    if (res.status === 401) throw new SyncError("\u767B\u5F55\u5931\u6548\uFF0C\u8BF7\u7528 /lab-login \u91CD\u65B0\u767B\u5F55\u3002");
+    throw new SyncError(`\u63A8\u9001\u5931\u8D25\uFF1AHTTP ${res.status}`);
+  } finally {
+    rmSync2(bundlePath, { force: true });
+  }
+}
+async function labRollback(opts) {
+  const cwd = opts.cwd ?? process.cwd();
+  const labDir = resolveLabDir(cwd, opts.labId);
+  await ensureLocalRepo(labDir);
+  const tags = await listBackupTags(labDir);
+  const commits = await listRecentCommits(labDir);
+  if (!opts.ref) {
+    return {
+      tags,
+      commits,
+      summary: buildRollbackList(tags, commits)
+    };
+  }
+  const known = tags.some((t) => t.name === opts.ref) || (await git(["rev-parse", "--verify", "-q", `${opts.ref}^{commit}`], labDir)).code === 0;
+  if (!known) {
+    throw new SyncError(`\u672A\u77E5\u7684\u56DE\u6EDA\u76EE\u6807\uFF1A${opts.ref}`);
+  }
+  const safetyTag = `lab-backup/pre-rollback-${timestamp()}`;
+  await git(["tag", safetyTag], labDir);
+  if (await isDirty2(labDir)) {
+    const stashed = await git(["stash", "push", "-u", "-m", `pre-rollback ${timestamp()}`], labDir);
+    if (stashed.code !== 0) {
+      throw new SyncError(
+        `\u56DE\u6EDA\u5DF2\u4E2D\u6B62\uFF1A\u65E0\u6CD5\u6682\u5B58\u5F53\u524D\u672A\u63D0\u4EA4\u7684\u6539\u52A8\uFF08git stash \u5931\u8D25\uFF09\uFF0C\u672A\u6267\u884C reset \u4EE5\u514D\u4E22\u5931\u3002
+${stashed.stderr || stashed.stdout}`
+      );
+    }
+  }
+  await gitOk(["reset", "--hard", opts.ref], labDir);
+  return {
+    reset: true,
+    ref: opts.ref,
+    tags,
+    commits,
+    summary: `\u5DF2\u56DE\u6EDA\u5230 ${opts.ref}\u3002\u56DE\u6EDA\u524D\u7684\u72B6\u6001\u5DF2\u5B58\u4E3A\u6807\u7B7E ${safetyTag}\uFF08\u82E5\u8981\u64A4\u9500\u56DE\u6EDA\uFF1Agit reset --hard ${safetyTag}\uFF09\u3002`
+  };
+}
+function timestamp() {
+  return (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-");
+}
+async function countCommits(labDir, base, tip) {
+  const range = base ? `${base}..${tip}` : tip;
+  const r = await git(["rev-list", "--count", range], labDir);
+  const n = Number(r.stdout);
+  return Number.isFinite(n) ? n : 0;
+}
+async function listBackupTags(labDir) {
+  const r = await git(
+    ["tag", "--list", "lab-backup/*", "--sort=-creatordate", "--format=%(refname:short)	%(subject)"],
+    labDir
+  );
+  if (!r.stdout) return [];
+  return r.stdout.split("\n").filter(Boolean).map((line) => {
+    const [name, ...rest] = line.split("	");
+    return { name: name ?? "", subject: rest.join("	") };
+  });
+}
+async function listRecentCommits(labDir) {
+  if (!await hasCommit(labDir)) return [];
+  const r = await git(["log", "-n", "15", "--pretty=%H	%s"], labDir);
+  if (!r.stdout) return [];
+  return r.stdout.split("\n").filter(Boolean).map((line) => {
+    const [sha, ...rest] = line.split("	");
+    return { sha: sha ?? "", subject: rest.join("	") };
+  });
+}
+function buildPlanSummary(pulled, plan, applied) {
+  const autoCount = plan.filter((p) => !p.confirm).length;
+  const blockers = plan.filter((p) => p.confirm);
+  const lines = [];
+  if (applied) {
+    lines.push(`\u62C9\u53D6\u4E86 ${pulled} \u4E2A\u4E91\u7AEF\u63D0\u4EA4\uFF0C\u5DF2\u81EA\u52A8\u5408\u5E76 ${plan.length} \u4E2A\u6587\u4EF6\u3002`);
+  } else {
+    lines.push(
+      `\u62C9\u53D6\u4E86 ${pulled} \u4E2A\u4E91\u7AEF\u63D0\u4EA4\uFF1A${autoCount} \u4E2A\u6587\u4EF6\u53EF\u81EA\u52A8\u5408\u5E76\uFF0C${blockers.length} \u4E2A\u9700\u8981\u4F60\u786E\u8BA4\u3002`
+    );
+  }
+  if (blockers.length > 0) {
+    lines.push("\u9700\u8981\u786E\u8BA4\uFF1A");
+    for (const b of blockers) {
+      const why = b.change === "deleted" ? "\u4E91\u7AEF\u5220\u9664\uFF08\u4F60\u672C\u5730\u53EF\u80FD\u8FD8\u5728\u7528\uFF09" : "\u53CC\u65B9\u90FD\u6539\u4E86\u540C\u4E00\u5904\uFF08\u51B2\u7A81\uFF09";
+      lines.push(`  - ${b.path} \u2014 ${why}`);
+    }
+  }
+  return lines.join("\n");
+}
+function buildRollbackList(tags, commits) {
+  const lines = ["\u53EF\u4EE5\u56DE\u6EDA\u5230\u4E0B\u9762\u4EFB\u610F\u4E00\u4E2A\uFF08\u7528 ref \u53C2\u6570\u6307\u5B9A\uFF09\uFF1A"];
+  if (tags.length) {
+    lines.push("\u5907\u4EFD\u6807\u7B7E\uFF1A");
+    for (const t of tags) lines.push(`  - ${t.name}${t.subject ? `  (${t.subject})` : ""}`);
+  }
+  if (commits.length) {
+    lines.push("\u6700\u8FD1\u63D0\u4EA4\uFF1A");
+    for (const c of commits.slice(0, 8))
+      lines.push(`  - ${c.sha.slice(0, 8)}  ${c.subject}`);
+  }
+  return lines.join("\n");
+}
+
 // src/prompt-composer.ts
 var PRIVATE_BANNER = [
   "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550",
@@ -31262,9 +32109,9 @@ var PRIVATE_BANNER = [
   "  \u8FD9\u662F\u7ED9 AI Mentor\u7684\u79C1\u6709\u8BBE\u7F6E,\u4E0D\u662F\u6559\u5B66\u5185\u5BB9\u3002\u771F\u6B63\u7684\u8BFE\u4ECE\u4E0B\u9762\u7684\u95EE\u5019\u5F00\u59CB \u2193",
   "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
 ].join("\n");
-function composeSystemPrompt(master, ctx) {
+function composeSystemPrompt(master, ctx, variant, contextPack) {
   const kpList = ctx.learning_objectives.map((kp, i) => `${i + 1}. ${kp.name}${kp.description ? ` \u2014 ${kp.description}` : ""}`).join("\n");
-  return [
+  const lines = [
     "# YOU ARE THE MASTER. ADOPT THIS PERSONA FOR THE ENTIRE SESSION.",
     "",
     master.persona_prompt,
@@ -31309,6 +32156,13 @@ function composeSystemPrompt(master, ctx) {
     "  required where the learner must ARTICULATE.",
     `- End EVERY response with: \u{1F4DA} [Lab ${ctx.lab_id} \xB7 {X}% complete]`,
     "  where X reflects checkpoint progress (you'll be told the current %).",
+    "- \u26D4 The badge is a SUFFIX, NEVER the whole reply. NEVER send a reply that is",
+    "  only the badge (or near-empty + badge). EVERY turn must carry substance",
+    "  BEFORE the badge: what you just did and what it showed (\u{1F52C} block if you ran",
+    "  anything), or a concrete question / options for the learner. If the learner",
+    "  asked you to do something, DO it this turn and REPORT what happened \u2014 never",
+    "  go silent while you work. A badge-only reply = the learner saw nothing happen,",
+    "  can't follow you and can't direct you. That is a failure of your core job.",
     "",
     "## OUTPUT & EXPERIMENT STYLE (you are a science demonstrator, not a code dumper):",
     "- Write SCANNABLE, not dense. Default to bullet lists; bold the key term;",
@@ -31330,7 +32184,19 @@ function composeSystemPrompt(master, ctx) {
     "  '\u8981\u4E0D\u8981\u6211\u8DD1\u8FD9\u4E2A\u5B9E\u9A8C\u7ED9\u4F60\u770B\uFF1F' \u2192 [\u8DD1] [\u6211\u81EA\u5DF1\u8DD1] [\u5148\u8BB2\u8BB2]. On [\u8DD1], YOU run it",
     "  (Bash) and surface the observation per the \u{1F52C} rule. The learner observes and",
     "  directs; the agent executes \u2014 that is the day-1 skill this course teaches."
-  ].join("\n");
+  ];
+  if (variant === "pack" && contextPack && contextPack.trim()) {
+    lines.push(
+      "",
+      "---",
+      "",
+      "# GOLDEN-PATH CONTEXT PACK (low-cost variant)",
+      "> \u4EE5\u4E0B\u662F\u672C lab \u7684\u9AD8\u901F\u5730\u56FE,\u7528\u6765\u51CF\u5C11\u63A2\u7D22\u5F2F\u8DEF\u3002\u5B83\u7ED9\u5730\u56FE\u3001\u4E0D\u66FF\u5B66\u5458\u5224\u65AD;\u6982\u5FF5\u9898\u4ECD\u8BA9\u5B66\u5458\u81EA\u5DF1\u7B54\u3002",
+      "",
+      contextPack.trim()
+    );
+  }
+  return lines.join("\n");
 }
 function composeTeachingDoc(ctx) {
   const checkpoints = ctx.checkpoints.map((c) => `### ${c.path}
@@ -31346,6 +32212,18 @@ ${c.content}`).join("\n\n");
     "## Checkpoints (use these to verify understanding):",
     checkpoints
   ].join("\n");
+}
+
+// src/variant.ts
+import { createHash } from "node:crypto";
+function calculateVariant(learnerId, labId, experimentId, opts) {
+  if (!opts.enabled) return "control";
+  const ratio = opts.ratio ?? 0.5;
+  if (ratio <= 0) return "control";
+  if (ratio >= 1) return "pack";
+  const h = createHash("sha256").update(`${learnerId}:${labId}:${experimentId}`).digest();
+  const frac = h.readUInt32BE(0) / 4294967295;
+  return frac < ratio ? "pack" : "control";
 }
 
 // src/recap-render.ts
@@ -31404,16 +32282,16 @@ function percentComplete() {
 }
 
 // src/session-store.ts
-import { mkdirSync as mkdirSync2, writeFileSync as writeFileSync2, readFileSync as readFileSync2, readdirSync, rmSync as rmSync2 } from "node:fs";
-import { join as join2 } from "node:path";
-import { homedir as homedir2 } from "node:os";
-var SESSIONS_DIR = join2(homedir2(), ".parallight", "sessions");
+import { mkdirSync as mkdirSync4, writeFileSync as writeFileSync4, readFileSync as readFileSync4, readdirSync, rmSync as rmSync3 } from "node:fs";
+import { join as join4 } from "node:path";
+import { homedir as homedir4 } from "node:os";
+var SESSIONS_DIR = join4(homedir4(), ".parallight", "sessions");
 function fileFor(labId) {
-  return join2(SESSIONS_DIR, `${labId.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`);
+  return join4(SESSIONS_DIR, `${labId.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`);
 }
 function saveSession(s, cwd) {
   try {
-    mkdirSync2(SESSIONS_DIR, { recursive: true });
+    mkdirSync4(SESSIONS_DIR, { recursive: true });
     const p = {
       labId: s.labId,
       title: s.title,
@@ -31423,15 +32301,16 @@ function saveSession(s, cwd) {
       lastActiveAt: (/* @__PURE__ */ new Date()).toISOString(),
       cwd,
       checkpoints: s.checkpoints,
-      serverSessionId: s.serverSessionId
+      serverSessionId: s.serverSessionId,
+      systemPrompt: s.systemPrompt
     };
-    writeFileSync2(fileFor(s.labId), JSON.stringify(p, null, 2));
+    writeFileSync4(fileFor(s.labId), JSON.stringify(p, null, 2));
   } catch {
   }
 }
 function loadByLab(labId) {
   try {
-    return JSON.parse(readFileSync2(fileFor(labId), "utf8"));
+    return JSON.parse(readFileSync4(fileFor(labId), "utf8"));
   } catch {
     return null;
   }
@@ -31442,7 +32321,7 @@ function loadMostRecent() {
     for (const f of readdirSync(SESSIONS_DIR)) {
       if (!f.endsWith(".json")) continue;
       try {
-        out.push(JSON.parse(readFileSync2(join2(SESSIONS_DIR, f), "utf8")));
+        out.push(JSON.parse(readFileSync4(join4(SESSIONS_DIR, f), "utf8")));
       } catch {
       }
     }
@@ -31454,7 +32333,7 @@ function loadMostRecent() {
 }
 function removeSession(labId) {
   try {
-    rmSync2(fileFor(labId), { force: true });
+    rmSync3(fileFor(labId), { force: true });
   } catch {
   }
 }
@@ -31472,6 +32351,16 @@ var PLACEHOLDER_PORTRAIT = [
 var server = new McpServer({ name: SERVER_NAME, version: PARALLIGHT_VERSION });
 var ok = (text) => ({ content: [{ type: "text", text }] });
 var err = (text) => ({ content: [{ type: "text", text: `\u26A0\uFE0F ${text}` }] });
+function quoteSubmission(label, text) {
+  const trimmed = text?.trim();
+  if (!trimmed) return "";
+  const clipped = trimmed.length > 800 ? `${trimmed.slice(0, 800)} \u2026(\u7565)` : trimmed;
+  const quoted = clipped.split("\n").map((l) => `> ${l}`).join("\n");
+  return `\u3010${label}\u3011
+${quoted}
+
+`;
+}
 function fileTree(paths) {
   const root = {};
   for (const p of [...paths].sort()) {
@@ -31549,8 +32438,14 @@ server.registerTool(
 );
 server.registerTool(
   "list_labs",
-  { title: "List labs", description: "List labs available to the logged-in learner." },
-  async () => {
+  {
+    title: "List labs",
+    description: "List labs available to the logged-in learner. Call WITHOUT track first: it returns a category picker (\u9884\u4FEE/\u7B2C\u4E00\u671F/\u7B2C\u4E8C\u671F). After the learner picks, call again with track.",
+    inputSchema: {
+      track: external_exports.enum(LAB_TRACK_KEYS).optional().describe("lab \u7C7B\u522B;\u7F3A\u7701 = \u5148\u5F39\u7C7B\u522B\u9009\u5355")
+    }
+  },
+  async ({ track }) => {
     try {
       requireToken();
     } catch {
@@ -31559,11 +32454,45 @@ server.registerTool(
     try {
       const labs = await listLabs();
       if (labs.length === 0) return ok("\u76EE\u524D\u6CA1\u6709\u53EF\u7528\u7684 lab\u3002");
+      const session = getSession();
+      const sessionLine = session ? `\u5F53\u524D\u8FDB\u884C\u4E2D\uFF1A**${session.title}** (${percentComplete()}%)
+
+` : "";
+      if (!track) {
+        const banner = maybeUpdateBanner(PARALLIGHT_VERSION, await getLatestVersion());
+        const counts = LAB_TRACKS.map((t) => ({ ...t, n: labsOfTrack(labs, t.key).length }));
+        const table2 = [
+          "| \u7C7B\u522B | \u5185\u5BB9 | lab \u6570 |",
+          "|:-----|:-----|:------|",
+          ...counts.map((t) => `| ${t.label} | ${t.desc} | ${t.n} |`)
+        ].join("\n");
+        const optionMap2 = counts.map((t) => `${t.label} \u2192 list_labs(track="${t.key}")`).join("; ");
+        return ok(
+          [
+            ...banner ? [banner, ""] : [],
+            `${sessionLine}## \u9009\u62E9 Lab \u7C7B\u522B`,
+            "",
+            table2,
+            "",
+            (banner ? "[NOW DO THIS] FIRST show the \u{1F514} update notice at the very top to the learner VERBATIM. THEN: " : "[NOW DO THIS] ") + `Ask the learner which category they want via AskUserQuestion \u2014 one option per row above, option label = the \u7C7B\u522B name, description = \u5185\u5BB9 + lab \u6570. Do NOT list or start individual labs yet. On their pick, call list_labs again with that category's track. Option\u2192call map: ${optionMap2}.`
+          ].join("\n")
+        );
+      }
+      const trackDef = LAB_TRACKS.find((t) => t.key === track);
+      const inTrack = labsOfTrack(labs, track);
+      if (inTrack.length === 0) {
+        const others = LAB_TRACKS.filter((t) => t.key !== track).map((t) => `${t.label} ${labsOfTrack(labs, t.key).length} \u4E2A`).join("\u3001");
+        return ok(
+          `\u300C${trackDef.label}\u300D\u76EE\u524D\u8FD8\u6CA1\u6709\u5DF2\u53D1\u5E03\u7684 lab\u3002
+
+[NOW DO THIS] Tell the learner this category is empty for now, then re-offer the other categories via AskUserQuestion (${others}); on pick call list_labs with that track.`
+        );
+      }
       const fmtDur = (d) => d ? `${d[0]}\u2013${d[1]}h` : "\u2014";
       const practice = (l) => (l.skills && l.skills.length ? l.skills : l.learning_objectives.map((o) => o.name)).join(
         " \xB7 "
       );
-      const rows = labs.map(
+      const rows = inTrack.map(
         (l) => `| ${l.order} | ${l.title} | ${practice(l)} | ${l.tagline ?? ""} | ${fmtDur(
           l.duration_estimate_hours
         )} |`
@@ -31573,18 +32502,14 @@ server.registerTool(
         "|:--|:----|:--------|:----------|:----|",
         ...rows
       ].join("\n");
-      const session = getSession();
-      const header = session ? `\u5F53\u524D\u8FDB\u884C\u4E2D\uFF1A**${session.title}** (${percentComplete()}%)
-
-## \u53EF\u7528 Lab` : "## \u53EF\u7528 Lab";
-      const optionMap = labs.map((l) => `${l.order} \u2192 start_lab(lab_id="${l.lab_id}")`).join("; ");
+      const optionMap = inTrack.map((l) => `${l.order} \u2192 start_lab(lab_id="${l.lab_id}")`).join("; ");
       return ok(
         [
-          header,
+          `${sessionLine}## \u53EF\u7528 Lab \xB7 ${trackDef.label}`,
           "",
           table,
           "",
-          `[NOW DO THIS] Show the table above to the learner VERBATIM (it is the scannable catalog \u2014 do not collapse it into the option cards). Then DO NOT ask them to type a lab id. Present the labs as SELECTABLE OPTIONS via AskUserQuestion \u2014 one option per row, the option label = a SHORT lab name (not the full title), so they pick by arrow keys (CLI) / cards (VSCode). On their pick, call start_lab with that row's lab_id. Row\u2192id map: ${optionMap}.`
+          `[NOW DO THIS] Show the table above to the learner VERBATIM (it is the scannable catalog \u2014 do not collapse it into the option cards). Then DO NOT ask them to type a lab id. Present the labs as SELECTABLE OPTIONS via AskUserQuestion \u2014 one option per row, the option label = a SHORT lab name (not the full title), plus a \u300C\u21A9 \u6362\u4E2A\u7C7B\u522B\u300Doption (on pick call list_labs with no track), so they pick by arrow keys (CLI) / cards (VSCode). On their pick, call start_lab with that row's lab_id. Row\u2192id map: ${optionMap}.`
         ].join("\n")
       );
     } catch (e) {
@@ -31607,8 +32532,8 @@ server.registerTool(
       return err("\u8FD8\u6CA1\u767B\u5F55\u3002\u5148\u7528 /lab-login \u767B\u5F55\u3002");
     }
     try {
-      const existingDir = join3(process.cwd(), lab_id);
-      if (existsSync2(existingDir) && !force) {
+      const existingDir = join5(process.cwd(), lab_id);
+      if (existsSync4(existingDir) && !force) {
         return err(
           `\u68C0\u6D4B\u5230 ./${lab_id}/ \u5DF2\u5B58\u5728\u2014\u2014\u4F60\u4E4B\u524D\u5F00\u8FC7\u8FD9\u4E2A lab\u3002
 \xB7 \u60F3\u63A5\u7740\u4E0A\u6B21\u8FDB\u5EA6:\u7528 /lab-resume
@@ -31616,18 +32541,18 @@ server.registerTool(
         );
       }
       const starter = await getStarter(lab_id);
-      const labDir = join3(process.cwd(), lab_id);
+      const labDir = join5(process.cwd(), lab_id);
       for (const f of starter.files) {
-        const dest = join3(labDir, f.path);
-        mkdirSync3(dirname(dest), { recursive: true });
-        writeFileSync3(dest, f.content);
+        const dest = join5(labDir, f.path);
+        mkdirSync5(dirname2(dest), { recursive: true });
+        writeFileSync5(dest, f.content);
       }
       for (const a of starter.assets ?? []) {
-        const dest = join3(labDir, a.path);
-        mkdirSync3(dirname(dest), { recursive: true });
+        const dest = join5(labDir, a.path);
+        mkdirSync5(dirname2(dest), { recursive: true });
         const res = await fetch(a.url);
         if (!res.ok) return err(`\u4E0B\u8F7D\u8D44\u4EA7\u5931\u8D25 ${a.path}\uFF1AHTTP ${res.status}`);
-        writeFileSync3(dest, Buffer.from(await res.arrayBuffer()));
+        writeFileSync5(dest, Buffer.from(await res.arrayBuffer()));
       }
       const example = starter.files.find((f) => f.path === ".env.example")?.content ?? "";
       let envContent = example.replace(/^PARALLIGHT_API_KEY=.*$/m, `PARALLIGHT_API_KEY=${token}`);
@@ -31645,7 +32570,22 @@ PARALLIGHT_API_KEY=${token}
 PARALLIGHT_BASE_URL=${LLM_PROXY_URL}
 `;
       }
-      writeFileSync3(join3(labDir, ".env"), envContent);
+      envContent = envContent.replace(/^PARALLIGHT_TOKEN=.*$/m, `PARALLIGHT_TOKEN=${token}`);
+      if (!/^PARALLIGHT_TOKEN=/m.test(envContent)) {
+        envContent += `
+PARALLIGHT_TOKEN=${token}
+`;
+      }
+      envContent = envContent.replace(
+        /^PARALLIGHT_SANDBOX_URL=.*$/m,
+        `PARALLIGHT_SANDBOX_URL=${SANDBOX_PROXY_URL}`
+      );
+      if (!/^PARALLIGHT_SANDBOX_URL=/m.test(envContent)) {
+        envContent += `
+PARALLIGHT_SANDBOX_URL=${SANDBOX_PROXY_URL}
+`;
+      }
+      writeFileSync5(join5(labDir, ".env"), envContent);
       const writtenTree = fileTree([
         ...starter.files.map((f) => f.path),
         ...(starter.assets ?? []).map((a) => a.path),
@@ -31653,7 +32593,14 @@ PARALLIGHT_BASE_URL=${LLM_PROXY_URL}
       ]);
       const ctx = await getContext(lab_id);
       const master = await getMaster(ctx.master);
-      const systemPrompt = composeSystemPrompt(master, ctx);
+      const learnerId = loadAuth()?.email || token;
+      const exp = await getRealExperiment(ctx.lab_id);
+      const variant = calculateVariant(learnerId, ctx.lab_id, exp.experimentId || "lowcost-v1", {
+        enabled: exp.enabled,
+        ratio: exp.ratio
+      });
+      const contextPack = variant === "pack" ? await getContextPack(ctx.lab_id) : "";
+      const systemPrompt = composeSystemPrompt(master, ctx, variant, contextPack);
       const checkpoints = ctx.learning_objectives.map((kp) => ({
         kp_id: kp.id,
         name: kp.name,
@@ -31671,7 +32618,7 @@ PARALLIGHT_BASE_URL=${LLM_PROXY_URL}
       });
       let serverSessionId;
       try {
-        serverSessionId = await openSession(ctx.lab_id, master.master_id, master.version);
+        serverSessionId = await openSession(ctx.lab_id, master.master_id, master.version, variant);
       } catch {
       }
       const s = getSession();
@@ -31827,6 +32774,23 @@ ${kp}`
   }
 );
 server.registerTool(
+  "super_loop",
+  {
+    title: "\u8D85\u957F\u81EA\u4E3B\u4EFB\u52A1",
+    description: "\u8FD4\u56DE super-run \u63D0\u4EA4\u5165\u53E3 URL:\u5B66\u5458\u5728\u7F51\u9875\u8868\u5355\u91CC\u586B\u76EE\u6807/\u8BC4\u6D4B\u6307\u6807/\u9884\u671F\u65F6\u95F4/\u6700\u5927\u8D44\u6E90,\u63D0\u4EA4\u540E agent \u5728\u4E91\u7AEF\u6C99\u7BB1\u91CC\u957F\u8DD1\u3002"
+  },
+  () => ok(
+    [
+      "\u{1F680} \u8D85\u957F\u81EA\u4E3B\u4EFB\u52A1(super-run)\u5165\u53E3:",
+      "",
+      "https://lab.parallight.ai/lab/super-loop",
+      "",
+      "\u628A\u4E0A\u9762\u7684\u94FE\u63A5\u5C55\u793A\u7ED9\u5B66\u5458,\u8BF7\u5B66\u5458\u6253\u5F00\u5B83:\u586B\u5199 \u76EE\u6807 / \u8BC4\u6D4B\u6307\u6807 / \u9884\u671F\u65F6\u95F4 / \u6700\u5927\u8D44\u6E90 \u5E76\u63D0\u4EA4\u3002",
+      "\u63D0\u4EA4\u540E\u4E91\u7AEF\u6C99\u7BB1\u4F1A\u81EA\u52A8\u5F00\u8DD1;\u5173\u6389\u9875\u9762\u4E5F\u4E0D\u5F71\u54CD\u3002\u8FDB\u5EA6\u968F\u65F6\u56DE\u540C\u4E00\u9875\u9762\u770B\u3002"
+    ].join("\n")
+  )
+);
+server.registerTool(
   "get_lab_kb",
   { title: "Knowledge points", description: "Read-only checklist of the lab's knowledge points." },
   () => {
@@ -31922,8 +32886,12 @@ server.registerTool(
       const lines = items.map(
         (it) => it.kind === "review" ? `\u{1F4DD} review (id: ${it.id})
 Lab ${it.lab_id ?? "?"} \u6279\u6539:
+
+${quoteSubmission("\u4F60\u5F53\u521D\u63D0\u4EA4\u7684", it.my_submission)}\u3010Mentor \u56DE\u590D\u3011
 ${it.marvin_text}
 \uFF08\u8981\u56DE\u590DMentor\u5C31\u7528 /lab-reply ${it.id}\uFF09` : `\u{1F4AC} \u79C1\u4FE1\u56DE\u590D (id: ${it.id}):
+
+${quoteSubmission("\u4F60\u5F53\u521D\u53D1\u7684", it.my_submission)}\u3010Mentor \u56DE\u590D\u3011
 ${it.marvin_text}`
       );
       return ok(lines.join("\n\n"));
@@ -31981,11 +32949,11 @@ server.registerTool(
         "\u8981\u770B\u4F1A\u8BDD\u5206\u6790,\u9700\u8981\u5148\u540C\u610F\u8BB0\u5F55\u4F60\u7684 lab \u4F1A\u8BDD\u6570\u636E(\u7528\u4E8E\u751F\u6210\u62A5\u544A + Marvin \u6559\u5B66\u652F\u6301;\u539F\u6587\u6700\u591A\u7559 30 \u5929)\u3002\u540C\u610F\u5C31\u7528 /lab-analysis \u65F6\u56DE\u7B54\u300C\u53EF\u4EE5\u300D,\u6216\u76F4\u63A5\u8BF4\u300C\u6211\u540C\u610F\u5206\u6790\u300D\u3002"
       );
     }
-    const dir = join3(homedir3(), ".parallight", "analysis");
-    const file2 = join3(dir, `${labId.replace(/[^a-zA-Z0-9_-]/g, "_")}.html`);
+    const dir = join5(homedir5(), ".parallight", "analysis");
+    const file2 = join5(dir, `${labId.replace(/[^a-zA-Z0-9_-]/g, "_")}.html`);
     try {
-      mkdirSync3(dir, { recursive: true });
-      writeFileSync3(file2, report.html ?? "");
+      mkdirSync5(dir, { recursive: true });
+      writeFileSync5(file2, report.html ?? "");
     } catch (e) {
       return err(`\u5199\u62A5\u544A\u6587\u4EF6\u5931\u8D25\uFF1A${String(e)}`);
     }
@@ -32230,6 +33198,314 @@ server.registerTool(
       return ok("\u597D\u7684,\u5DF2\u8BB0\u4E0B\u4F60\u7684\u540C\u610F\u3002\u4EE5\u540E\u968F\u65F6\u7528 /lab-analysis \u770B\u4F60\u7684\u4F1A\u8BDD\u5206\u6790\u3002");
     } catch (e) {
       return err(`\u8BB0\u5F55\u540C\u610F\u5931\u8D25\uFF1A${String(e)}`);
+    }
+  }
+);
+function readClaudeEnvConfig() {
+  let baseUrl = process.env.ANTHROPIC_BASE_URL ?? "";
+  let authToken = process.env.ANTHROPIC_AUTH_TOKEN ?? "";
+  try {
+    const p = join5(homedir5(), ".claude", "settings.json");
+    if (existsSync4(p)) {
+      const s = JSON.parse(readFileSync5(p, "utf8"));
+      const e = s?.env ?? {};
+      if (!baseUrl && typeof e.ANTHROPIC_BASE_URL === "string") baseUrl = e.ANTHROPIC_BASE_URL;
+      if (!authToken && typeof e.ANTHROPIC_AUTH_TOKEN === "string") authToken = e.ANTHROPIC_AUTH_TOKEN;
+    }
+  } catch {
+  }
+  return { baseUrl, authToken };
+}
+function isGatewayRouted() {
+  const { baseUrl, authToken } = readClaudeEnvConfig();
+  return /parallight/i.test(baseUrl) || authToken.startsWith("plk_");
+}
+function gatewayProbeToken() {
+  try {
+    const a = loadAuth();
+    if (a?.proxy_token) return a.proxy_token;
+  } catch {
+  }
+  const { authToken } = readClaudeEnvConfig();
+  return authToken.startsWith("plk_") ? authToken : null;
+}
+async function fetchConfiguredProviders() {
+  const token = gatewayProbeToken();
+  if (!token) return null;
+  try {
+    const res = await fetch(`${LLM_PROXY_URL}/v1/providers`, {
+      headers: { authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) return null;
+    const j = await res.json();
+    return j && typeof j.providers === "object" ? j.providers : null;
+  } catch {
+    return null;
+  }
+}
+server.registerTool(
+  "list_models",
+  {
+    title: "List available models + prices, or switch",
+    description: "\u5217\u51FA\u53EF\u5207\u6362\u7684 LLM \u6A21\u578B(Claude/GLM/Kimi/DeepSeek/Qwen/MiniMax)+ \u4EF7\u683C\u3002\u4F20 select=<slug> \u5207\u6362\u9ED8\u8BA4\u6A21\u578B\u3002",
+    inputSchema: { select: external_exports.string().optional() }
+  },
+  async ({ select }) => {
+    const gatewayRouted = isGatewayRouted();
+    const configured = gatewayRouted ? await fetchConfiguredProviders() : null;
+    const filter = { gatewayRouted, configured };
+    if (typeof select === "string" && select.trim()) {
+      const r = setAgentModel(select.trim(), filter);
+      return r.ok ? ok(r.msg) : err(r.msg);
+    }
+    let current2;
+    try {
+      const p = join5(homedir5(), ".claude", "settings.json");
+      if (existsSync4(p)) {
+        const s = JSON.parse(readFileSync5(p, "utf8"));
+        if (typeof s?.env?.ANTHROPIC_MODEL === "string") current2 = s.env.ANTHROPIC_MODEL;
+      }
+    } catch {
+    }
+    return ok(
+      renderCatalog(current2, filter) + "\n\n[NOW DO THIS] \u628A\u4E0A\u9762\u7684\u8868\u683C\u539F\u6837\u5B8C\u6574\u5C55\u793A\u7ED9\u5B66\u5458\u3002\u7136\u540E\u7528 AskUserQuestion \u8BA9\u4ED6\u4ECE \u2705 \u53EF\u5207\u7684\u6A21\u578B\u91CC\u9009\u4E00\u4E2A(\u9009\u9879\u6807\u7B7E\u7528\u6A21\u578B\u540D + \u4EF7\u683C,\u5916\u52A0\u300C\u4E0D\u5207 / \u5148\u770B\u770B\u300D),\u4E0D\u8981\u8BA9\u4ED6\u6253\u5B57\u8F93 slug\u3002\u9009\u5B9A\u540E\u8C03 list_models \u5E76\u4F20 select=<\u90A3\u4E00\u884C\u7684 slug>\u3002\u5207\u6362\u540E\u5FC5\u987B**\u91CD\u542F claude** \u624D\u751F\u6548;**\u4E0D\u8981**\u5EFA\u8BAE\u7528 /model \u5207(\u5B83\u4E0D\u8BA4\u7F51\u5173\u81EA\u5B9A\u4E49 slug,\u4F1A\u62A5 model not found)\u3002"
+    );
+  }
+);
+server.registerTool(
+  "setup_local_gateway",
+  {
+    title: "Set up a local gateway workspace (use external models locally)",
+    description: "\u5728\u672C\u5730\u5EFA\u4E00\u4E2A\u8D70 Parallight \u7F51\u5173\u7684\u4E13\u7528\u76EE\u5F55(\u9ED8\u8BA4 ~/parallight-gw):\u5199\u5165\u7F51\u5173\u5730\u5740 + \u5B66\u5458\u81EA\u5DF1\u7684 token + \u9ED8\u8BA4\u6A21\u578B\u3002\u5B66\u5458 cd \u8FDB\u53BB\u5F00 claude \u5373\u53EF\u5728\u672C\u5730\u7528 GLM/Kimi/MiniMax/DeepSeek/Opus 4.8 \u7B49\u5916\u90E8\u6A21\u578B,\u4E3B CC \u5B8C\u5168\u4E0D\u53D7\u5F71\u54CD\u3002model=<slug> \u8BBE\u9ED8\u8BA4\u6A21\u578B(\u9ED8\u8BA4 claude-sonnet-5);dir=<\u8DEF\u5F84> \u81EA\u5B9A\u4E49\u76EE\u5F55\u3002",
+    inputSchema: { model: external_exports.string().optional(), dir: external_exports.string().optional() }
+  },
+  async ({ model, dir }) => {
+    const token = gatewayProbeToken();
+    if (!token) {
+      return err(
+        "\u6CA1\u627E\u5230\u4F60\u7684 Parallight token \u2014\u2014 \u5148\u5728\u4E3B CC \u91CC\u8DD1 /lab \u767B\u5F55\u62FF\u5230 token,\u518D\u6765\u5EFA\u7F51\u5173\u76EE\u5F55\u3002"
+      );
+    }
+    const raw = dir && dir.trim() || "~/parallight-gw";
+    const target = raw.startsWith("~") ? join5(homedir5(), raw.slice(1).replace(/^[/\\]/, "")) : raw;
+    const chosen = model && model.trim() || "claude-sonnet-5";
+    try {
+      const claudeDir = join5(target, ".claude");
+      mkdirSync5(claudeDir, { recursive: true, mode: 448 });
+      const settingsPath = join5(claudeDir, "settings.json");
+      let settings = {};
+      try {
+        if (existsSync4(settingsPath))
+          settings = JSON.parse(readFileSync5(settingsPath, "utf8"));
+      } catch {
+        settings = {};
+      }
+      const env = settings.env && typeof settings.env === "object" ? settings.env : {};
+      env.ANTHROPIC_BASE_URL = LLM_PROXY_URL;
+      env.ANTHROPIC_AUTH_TOKEN = token;
+      env.ANTHROPIC_MODEL = chosen;
+      settings.env = env;
+      writeFileSync5(settingsPath, JSON.stringify(settings, null, 2) + "\n", { mode: 384 });
+      chmodSync2(settingsPath, 384);
+      try {
+        writeFileSync5(join5(target, ".gitignore"), ".claude/\n");
+      } catch {
+      }
+      return ok(
+        `\u2705 \u5DF2\u5EFA\u597D\u7F51\u5173\u4E13\u7528\u76EE\u5F55:${target}(\u9ED8\u8BA4\u6A21\u578B ${chosen})\u3002
+
+\u7528\u6CD5:
+  cd ${target}
+  claude
+
+\u8FDB\u53BB\u540E\u8DD1 /more-model \u5C31\u80FD\u770B\u5230\u5E76\u5207\u6362 GLM / Kimi / MiniMax / DeepSeek / Opus 4.8(\u8D70\u7F51\u5173,\u6309\u91CF\u8BA1\u8D39)\u3002\u4F60\u4E3B CC \u5B8C\u5168\u4E0D\u53D7\u5F71\u54CD(\u4ECD\u662F\u4F60\u81EA\u5DF1\u7684\u8D26\u53F7 / \u6A21\u578B / \u5957\u9910)\u3002
+(\u8BE5\u76EE\u5F55\u542B\u4F60\u7684 token,\u5DF2\u81EA\u52A8\u52A0 .gitignore,\u522B\u624B\u52A8\u63D0\u4EA4\u5230 git\u3002)`
+      );
+    } catch (e) {
+      return err(`\u5EFA\u7F51\u5173\u76EE\u5F55\u5931\u8D25:${String(e)}`);
+    }
+  }
+);
+server.registerTool(
+  "list_hotspots",
+  {
+    title: "List taste hotspots",
+    description: "\u5217\u51FA\u5C1D\u9C9C\u53F0\u53EF\u52A8\u624B\u8BD5\u7684\u70ED\u70B9\u5361(\u65E0\u9700\u767B\u5F55)\u3002"
+  },
+  async () => {
+    try {
+      const cards = await fetchHotspots();
+      if (cards.length === 0) return ok("\u5C1D\u9C9C\u53F0\u6682\u65F6\u6CA1\u6709\u53EF\u52A8\u624B\u8BD5\u7684\u70ED\u70B9\u5361\u3002");
+      const { table, optionMap } = formatHotspotList(cards);
+      return ok(
+        [
+          "## \u{1F525} \u5C1D\u9C9C\u53F0\u70ED\u70B9(\u53EF\u672C\u673A\u52A8\u624B\u8BD5)",
+          "",
+          table,
+          "",
+          `[NOW DO THIS] Show the table VERBATIM. Then present the hotspots as SELECTABLE OPTIONS via AskUserQuestion(short labels) plus a final option \u300C\u5148\u770B\u770B\u300D \u2014 do NOT make the learner type a slug. On pick, call try_hotspot with that row's slug. Row\u2192slug map: ${optionMap}. If they pick \u300C\u5148\u770B\u770B\u300D, stop here.`
+        ].join("\n")
+      );
+    } catch (e) {
+      return err(`\u83B7\u53D6\u70ED\u70B9\u5217\u8868\u5931\u8D25:${String(e)}`);
+    }
+  }
+);
+server.registerTool(
+  "try_hotspot",
+  {
+    title: "Try a hotspot locally",
+    description: "\u628A\u9009\u4E2D\u7684\u5C1D\u9C9C\u5361\u5199\u5230\u672C\u5730 fresh/<slug>.md,\u5F15\u5BFC\u5B66\u5458\u5728\u672C\u673A\u9010\u6B65\u6267\u884C\u3002",
+    inputSchema: { slug: external_exports.string() }
+  },
+  async ({ slug }) => {
+    if (!isValidSlug(slug)) return err("\u975E\u6CD5 slug\u3002");
+    try {
+      const cards = await fetchHotspots();
+      const card = cards.find((c) => c.slug === slug);
+      if (!card) return err(`\u6CA1\u627E\u5230\u70ED\u70B9\u5361 ${slug}(\u53EF\u80FD\u5DF2\u4E0B\u7EBF),\u7528 list_hotspots \u91CD\u65B0\u770B\u5217\u8868\u3002`);
+      mkdirSync5(join5(process.cwd(), "fresh"), { recursive: true });
+      const file2 = join5(process.cwd(), "fresh", `${slug}.md`);
+      writeFileSync5(file2, hotspotMarkdown(card), "utf8");
+      let synced = false;
+      try {
+        const token = requireToken();
+        const res = await fetch(`${AGENT_API_BASE}/me/labs`, {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+          body: JSON.stringify({ action: "save", card_slug: slug })
+        });
+        synced = res.ok;
+      } catch {
+      }
+      return ok(
+        [
+          `\u5DF2\u5199\u5165 ${file2}`,
+          "",
+          "[NOW DO THIS] 1) Show the learner the file path and a one-line summary of what this hotspot demonstrates. 2) Walk through the steps in fresh/" + slug + `.md ONE BY ONE: before each step, explain in one sentence what it does, then run it with the learner's confirmation \u2014 never batch-execute all steps unattended. 3) After the last step, check the result against the expect block and tell the learner pass/fail. 4) On pass, call complete_hotspot(slug="` + slug + '") to sync progress' + (synced ? "" : "(\u82E5\u672A\u767B\u5F55,\u63D0\u4E00\u53E5 /lab-login \u540E\u53EF\u540C\u6B65\u8FDB\u5EA6,\u4E0D\u5F3A\u63A8)") + "."
+        ].join("\n")
+      );
+    } catch (e) {
+      return err(`try_hotspot \u5931\u8D25:${String(e)}`);
+    }
+  }
+);
+server.registerTool(
+  "complete_hotspot",
+  {
+    title: "Mark hotspot completed",
+    description: "\u5B66\u5458\u8DD1\u5B8C\u70ED\u70B9\u5361\u6B65\u9AA4\u5E76\u901A\u8FC7\u9A8C\u6536\u540E,\u540C\u6B65\u300C\u5DF2\u5B8C\u6210\u300D\u5230\u6211\u7684\u5B9E\u9A8C\u53F0\u3002",
+    inputSchema: { slug: external_exports.string() }
+  },
+  async ({ slug }) => {
+    if (!isValidSlug(slug)) return err("\u975E\u6CD5 slug\u3002");
+    let token;
+    try {
+      token = requireToken();
+    } catch {
+      return ok("\u672C\u5730\u5B8C\u6210 \u2705(\u672A\u767B\u5F55,\u6CA1\u6709\u4E91\u7AEF\u540C\u6B65;/lab-login \u540E\u518D\u8DD1 complete_hotspot \u53EF\u8865\u8BB0)\u3002");
+    }
+    try {
+      const res = await fetch(`${AGENT_API_BASE}/me/labs`, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+        body: JSON.stringify({ action: "complete", card_slug: slug })
+      });
+      if (!res.ok) return err(`\u540C\u6B65\u5931\u8D25(HTTP ${res.status});\u672C\u5730\u5DF2\u5B8C\u6210,\u7A0D\u540E\u53EF\u91CD\u8BD5\u3002`);
+      return ok(`\u5B8C\u6210 \u2705 \u5DF2\u540C\u6B65\u5230\u300C\u6211\u7684\u5B9E\u9A8C\u53F0\u300D(lab.parallight.ai/home \u53EF\u89C1)\u3002`);
+    } catch (e) {
+      return err(`\u540C\u6B65\u5931\u8D25:${String(e)};\u672C\u5730\u5DF2\u5B8C\u6210,\u7A0D\u540E\u53EF\u91CD\u8BD5\u3002`);
+    }
+  }
+);
+function syncErrorText(e) {
+  if (e instanceof NoSandboxError)
+    return "\u4F60\u8FD8\u6CA1\u6709\u4E91\u7AEF lab \u73AF\u5883\u3002\u5148\u53BB\u7F51\u9875\u5F00\u4E00\u6B21\u5728\u7EBF lab\uFF0C\u7136\u540E\u518D\u540C\u6B65\u3002";
+  if (e instanceof UnpaidError) return "\u540C\u6B65\u662F\u4ED8\u8D39\u529F\u80FD\u3002\u5347\u7EA7\u540E\u5373\u53EF\u5728\u672C\u5730\u548C\u4E91\u7AEF\u4E4B\u95F4\u540C\u6B65\u4F60\u7684 lab\u3002";
+  if (e instanceof LockedError) return "\u53E6\u4E00\u4E2A\u540C\u6B65\u6B63\u5728\u8FDB\u884C\uFF08\u53EF\u80FD\u662F\u4F60\u53E6\u4E00\u4E2A\u7A97\u53E3\uFF09\u3002\u7A0D\u7B49\u51E0\u79D2\u518D\u8BD5\u3002";
+  return String(e instanceof Error ? e.message : e);
+}
+function renderBlockers(plan) {
+  return plan.filter((p) => p.confirm).map((p) => {
+    const why = p.change === "deleted" ? "\u4E91\u7AEF\u5220\u9664\u4E86\u5B83\uFF08\u4F60\u672C\u5730\u53EF\u80FD\u8FD8\u5728\u7528\uFF09\u2192 \u9700\u8981\u4F60\u786E\u8BA4\u662F\u5426\u5220\u9664" : "\u4F60\u548C\u4E91\u7AEF\u90FD\u6539\u4E86\u8FD9\u91CC \u2192 \u51B2\u7A81\uFF0C\u9700\u8981\u4F60\u51B3\u5B9A\u600E\u4E48\u5408";
+    return `  - ${p.path} \u2014 ${why}`;
+  }).join("\n");
+}
+server.registerTool(
+  "lab_pull",
+  {
+    title: "\u62C9\u53D6\u4E91\u7AEF lab \u6539\u52A8\uFF08cloud \u2192 local\uFF09",
+    description: "\u628A\u4F60\u5728\u7EBF lab(\u4E91\u7AEF\u6C99\u7BB1 ~/parallight)\u91CC\u7684\u6539\u52A8\u540C\u6B65\u5230\u672C\u5730\u5F53\u524D lab \u76EE\u5F55\u3002\u5E72\u51C0\u7684\u6539\u52A8\u4F1A\u81EA\u52A8 3-way \u5408\u5E76\uFF1B\u53EA\u6709\u771F\u6B63\u7684\u51B2\u7A81\u6216\u300C\u4E91\u7AEF\u5220\u9664\u300D\u624D\u4F1A\u505C\u4E0B\u6765\u8BA9\u4F60\u786E\u8BA4\u3002\u786E\u8BA4\u540E\u7528 apply=true \u518D\u6B21\u8C03\u7528\u6765\u5B8C\u6210\u5408\u5E76\u3002\u9700\u8981\u5148\u5F00\u59CB/\u6062\u590D\u4E00\u4E2A lab\u3002",
+    inputSchema: { apply: external_exports.boolean().optional() }
+  },
+  async ({ apply }) => {
+    const s = getSession();
+    if (!s) return err("\u5F53\u524D\u6CA1\u6709\u8FDB\u884C\u4E2D\u7684 lab\u3002\u5148\u7528 /lab-start \u6216 /lab-resume\u3002");
+    try {
+      const r = await labPull({ labId: s.labId, apply });
+      if (r.upToDate) return ok(`\u2705 ${r.summary}`);
+      if (r.needsConfirm) {
+        return ok(
+          [
+            `\u{1F53B} ${r.summary}`,
+            "",
+            renderBlockers(r.plan),
+            "",
+            "[NOW DO THIS] \u628A\u4E0A\u9762\u6BCF\u4E00\u5904\u7528\u4EBA\u8BDD\u8BB2\u7ED9\u5B66\u5458\uFF08\u4E91\u7AEF\u6539\u4E86\u4EC0\u4E48 / \u4F60\u6539\u4E86\u4EC0\u4E48 / \u4E3A\u4EC0\u4E48\u51B2\u7A81\u6216\u4E3A\u4EC0\u4E48\u4E0D\u80FD\u76F4\u63A5\u5220\uFF09\uFF0C\u9010\u4E2A\u786E\u8BA4\u3002\u5B66\u5458\u90FD\u786E\u8BA4\u8981\u5E94\u7528\u540E,\u8C03\u7528 lab_pull(apply=true) \u5B8C\u6210\u5408\u5E76\uFF08\u5408\u5E76\u524D\u4F1A\u81EA\u52A8\u6253\u4E00\u4E2A lab-backup \u5907\u4EFD\u6807\u7B7E\uFF0C\u968F\u65F6\u80FD /lab-rollback\uFF09\u3002\u82E5\u6709\u5185\u5BB9\u51B2\u7A81\uFF0Capply \u540E\u5DE5\u4F5C\u533A\u91CC\u4F1A\u6709 <<<<<<< \u51B2\u7A81\u6807\u8BB0\uFF0C\u7531\u4F60\u6309\u5B66\u5458\u610F\u613F\u6539\u597D\u518D\u63D0\u4EA4\u3002"
+          ].join("\n")
+        );
+      }
+      return ok(`\u2705 ${r.summary}
+
+\uFF08\u5DF2\u81EA\u52A8\u6253\u5907\u4EFD\u6807\u7B7E\uFF0C\u82E5\u60F3\u56DE\u9000\u7528 /lab-rollback\u3002\uFF09`);
+    } catch (e) {
+      return err(syncErrorText(e));
+    }
+  }
+);
+server.registerTool(
+  "lab_push",
+  {
+    title: "\u63A8\u9001\u672C\u5730 lab \u6539\u52A8\uFF08local \u2192 cloud\uFF09",
+    description: "\u628A\u672C\u5730\u5F53\u524D lab \u76EE\u5F55\u7684\u6539\u52A8\u63A8\u5230\u4F60\u7684\u4E91\u7AEF\u6C99\u7BB1(~/parallight)\u3002\u4F1A\u5148\u81EA\u52A8\u63D0\u4EA4\u672A\u4FDD\u5B58\u7684\u6539\u52A8\u3001\u5E76\u5148\u62C9\u53D6\u5408\u5E76\u4E91\u7AEF(\u5408\u5E76\u53EA\u5728\u672C\u5730\u53D1\u751F\uFF1B\u82E5\u6709\u51B2\u7A81\u4F1A\u505C\u4E0B\u8BA9\u4F60\u5148\u89E3\u51B3)\uFF0C\u518D\u628A\u4E91\u7AEF\u7F3A\u7684\u63D0\u4EA4\u63A8\u4E0A\u53BB\u3002\u9700\u8981\u5148\u5F00\u59CB/\u6062\u590D\u4E00\u4E2A lab\u3002",
+    inputSchema: {}
+  },
+  async () => {
+    const s = getSession();
+    if (!s) return err("\u5F53\u524D\u6CA1\u6709\u8FDB\u884C\u4E2D\u7684 lab\u3002\u5148\u7528 /lab-start \u6216 /lab-resume\u3002");
+    try {
+      const r = await labPush({ labId: s.labId });
+      if (!r.ok) return err(r.summary);
+      return ok(`\u2705 ${r.summary}`);
+    } catch (e) {
+      return err(syncErrorText(e));
+    }
+  }
+);
+server.registerTool(
+  "lab_rollback",
+  {
+    title: "\u56DE\u6EDA\u672C\u5730 lab \u5230\u4E4B\u524D\u7684\u7248\u672C",
+    description: "\u628A\u672C\u5730\u5F53\u524D lab \u76EE\u5F55\u56DE\u5230\u67D0\u4E2A\u4E4B\u524D\u7684\u7248\u672C\uFF08\u540C\u6B65\u524D\u81EA\u52A8\u6253\u7684 lab-backup \u5907\u4EFD\u6807\u7B7E\uFF0C\u6216\u67D0\u4E2A\u63D0\u4EA4\uFF09\u3002\u4E0D\u4F20 ref \u2192 \u5217\u51FA\u53EF\u9009\u7684\u5907\u4EFD\u70B9 + \u6700\u8FD1\u63D0\u4EA4\uFF0C\u8BA9\u5B66\u5458\u6311\u3002\u4F20 ref \u2192 \u56DE\u6EDA\u5230\u5B83\uFF08\u56DE\u6EDA\u524D\u4F1A\u5148 stash + \u6253\u6807\u7B7E\u4FDD\u5B58\u5F53\u524D\u72B6\u6001\uFF0C\u7EDD\u4E0D\u4E22\u4E1C\u897F\uFF09\u3002\u9700\u8981\u5148\u5F00\u59CB/\u6062\u590D\u4E00\u4E2A lab\u3002",
+    inputSchema: { ref: external_exports.string().optional() }
+  },
+  async ({ ref }) => {
+    const s = getSession();
+    if (!s) return err("\u5F53\u524D\u6CA1\u6709\u8FDB\u884C\u4E2D\u7684 lab\u3002\u5148\u7528 /lab-start \u6216 /lab-resume\u3002");
+    try {
+      const r = await labRollback({ labId: s.labId, ref });
+      if (!r.reset) {
+        if (r.tags.length === 0 && r.commits.length === 0)
+          return ok("\u8FD8\u6CA1\u6709\u53EF\u56DE\u6EDA\u7684\u7248\u672C\uFF08\u540C\u6B65\u8FC7\u81F3\u5C11\u4E00\u6B21\u540E\u4F1A\u6709\u5907\u4EFD\u70B9\uFF09\u3002");
+        return ok(
+          `${r.summary}
+
+[NOW DO THIS] \u628A\u4E0A\u9762\u7684\u5907\u4EFD\u70B9/\u63D0\u4EA4\u5217\u7ED9\u5B66\u5458\uFF0C\u8BA9\u4ED6\u6311\u4E00\u4E2A\uFF0C\u7136\u540E\u7528 lab_rollback(ref="...") \u56DE\u6EDA\u3002`
+        );
+      }
+      return ok(`\u2705 ${r.summary}`);
+    } catch (e) {
+      return err(syncErrorText(e));
     }
   }
 );
