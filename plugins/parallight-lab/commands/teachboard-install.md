@@ -5,6 +5,9 @@ description: 给白板的代码环境加装 Python 包(验证通过后绑到代�
 
 <!-- AUTO-GENERATED from commands-src/teachboard-install.md — do not edit. Run `pnpm gen:commands`. -->
 
+**语言规则 / Language rule**:Write everything on the board — titles, text, captions, labels, chart names, reply boxes — in the language the user wrote this request in. If the user writes English: call `tb_describe_schema` with `lang:"en"` and set `lang:"en"` in the board spec. Chinese → `lang:"zh"`. Other languages → write content in that language and set `lang` to the closer of en/zh (en for non-CJK). Relay tool messages to the user in their language (translate the Chinese tool texts when the user is not Chinese).
+板上的一切(标题、文字、图注、标签、图表名、回复框)一律用用户提出这个请求时所用的语言写。用户用英文 → 调 `tb_describe_schema` 时传 `lang:"en"`,板 spec 里设 `lang:"en"`;中文 → `lang:"zh"`;其它语言 → 内容用该语言写,`lang` 取最接近的 en/zh(非中日韩文字用 en)。把工具消息转给用户时用用户的语言(用户不是中文时,翻译中文的工具文本)。
+
 参数 = `$ARGUMENTS`。拆成:要装的包(一个或多个 PyPI 包名,可带版本约束,如 `einops` `triton==3.1.0`)+ 可选的 `--env <环境id>`。没给任何包名 → 先问学员要装什么,不要猜。
 
 **定环境**:
