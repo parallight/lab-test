@@ -84456,6 +84456,38 @@ var EXAMPLE_ZH = {
   defaultEnv: "llmsys26-cuda",
   acts: [
     {
+      id: "outline",
+      title: "\u4ECA\u5929\u7684\u8DEF\u7EBF",
+      layout: "column",
+      items: [
+        { kind: "text", id: "goal", role: "heading", text: "\u5B66\u5B8C\u8FD9\u5757\u677F,\u4F60\u80FD\u5728 GPU \u4E0A\u5199\u51FA\u5E76\u8DD1\u901A\u81EA\u5DF1\u7684\u7B2C\u4E00\u4E2A map kernel" },
+        {
+          kind: "group",
+          id: "route",
+          title: "\u6211\u4EEC\u4F1A\u8BB2",
+          items: [
+            { kind: "text", id: "r1", text: "1. \u4E3A\u4EC0\u4E48\u4E00\u4E2A\u7EBF\u7A0B\u7B97\u4E00\u4E2A\u5143\u7D20" },
+            { kind: "text", id: "r2", text: "2. \u52A8\u624B:\u5199 map kernel" }
+          ]
+        },
+        {
+          kind: "group",
+          id: "lab",
+          title: "\u52A8\u624B\u5B9E\u9A8C",
+          items: [{ kind: "text", id: "x1", text: "\u5728 llmsys26-cuda \u73AF\u5883\u91CC\u8865\u5168 HW1_1,\u8DD1\u5B98\u65B9\u6D4B\u8BD5\u770B\u5B83\u901A\u8FC7" }]
+        },
+        {
+          kind: "group",
+          id: "gain",
+          title: "\u5B66\u5B8C\u4F60\u4F1A",
+          items: [
+            { kind: "text", id: "g1", text: "\xB7 \u7528 blockIdx / threadIdx \u7B97\u51FA\u5168\u5C40\u4E0B\u6807" },
+            { kind: "text", id: "g2", text: "\xB7 \u77E5\u9053\u8D8A\u754C\u68C0\u67E5\u4E3A\u4EC0\u4E48\u4E0D\u80FD\u7701" }
+          ]
+        }
+      ]
+    },
+    {
       id: "why",
       title: "\u4E3A\u4EC0\u4E48\u4E00\u4E2A\u7EBF\u7A0B\u7B97\u4E00\u4E2A\u5143\u7D20",
       layout: "flow",
@@ -84490,6 +84522,38 @@ var EXAMPLE_EN = {
   title: "Gradient descent in one picture",
   lang: "en",
   acts: [
+    {
+      id: "outline",
+      title: "Today's route",
+      layout: "column",
+      items: [
+        { kind: "text", id: "goal", role: "heading", text: "By the end you can run gradient descent by hand and see why the step size matters" },
+        {
+          kind: "group",
+          id: "route",
+          title: "What we'll cover",
+          items: [
+            { kind: "text", id: "r1", text: "1. Walk downhill" },
+            { kind: "text", id: "r2", text: "2. Run it" }
+          ]
+        },
+        {
+          kind: "group",
+          id: "lab",
+          title: "Experiment",
+          items: [{ kind: "text", id: "x1", text: "Run 20 steps in python-cpu and watch x shrink toward 0" }]
+        },
+        {
+          kind: "group",
+          id: "gain",
+          title: "You'll walk away with",
+          items: [
+            { kind: "text", id: "g1", text: "- The update rule x <- x - eta * grad" },
+            { kind: "text", id: "g2", text: "- A feel for what a too-large step does" }
+          ]
+        }
+      ]
+    },
     {
       id: "intuition",
       title: "Walk downhill",
@@ -84608,10 +84672,11 @@ acts \u226412 \xB7 \u6BCF\u5E55 items \u226412 \xB7 text \u2264600 \u5B57 \xB7 c
 ## \u5DE5\u4F5C\u65B9\u5F0F
 0. **\u5148\u5BF9\u9F50,\u518D\u4E0A\u677F\u3002** \u5EFA\u677F\u524D\u5F04\u6E05\u4E09\u4EF6\u4E8B:\u76EE\u6807(\u5B66\u4EC0\u4E48 / \u63A2\u7D22\u4EC0\u4E48 / \u505A\u4EC0\u4E48\u5B9E\u9A8C,\u505A\u5230\u4EC0\u4E48\u7A0B\u5EA6)\u3001\u80CC\u666F(\u5DF2\u7ECF\u4F1A\u4EC0\u4E48\u3001\u5361\u5728\u54EA)\u3001\u53C2\u8003(\u6CBF\u7740\u54EA\u672C\u4E66 / \u54EA\u95E8\u8BFE / \u54EA\u7BC7\u8BBA\u6587 / \u54EA\u4EFD\u4EE3\u7801\u8D70,\u6709\u6CA1\u6709\u81EA\u5DF1\u7684\u6750\u6599)\u3002\u5BF9\u8BDD\u91CC\u770B\u4E0D\u51FA\u6765 \u2192 \u7528\u4E00\u6761\u6D88\u606F\u95EE,\u6700\u591A 3 \u4E2A\u95EE\u9898\u3001\u6BCF\u4E2A\u7ED9 2\u20133 \u4E2A\u53EF\u9009\u9879;\u5DF2\u7ECF\u80FD\u5224\u65AD \u2192 \u4E0D\u95EE,\u5199\u51FA\u4E00\u53E5\u8BDD\u753B\u50CF + \u5EFA\u8BAE\u7684\u5B66\u4E60\u8DEF\u5F84(\u5E55\u7684\u6E05\u5355),\u8BF7\u5B66\u5458\u786E\u8BA4\u6216\u4FEE\u6539\u3002\u786E\u8BA4\u540E\u624D\u5EFA\u677F,\u5E76\u628A\u6838\u5BF9\u8FC7\u7684\u5185\u5BB9\u5199\u8FDB \`brief\`\u3002\u5B66\u5458\u8BF4\u300C\u76F4\u63A5\u4E0A\u677F\u300D\u2192 \u4E0D\u95EE,\u4F46\u4ECD\u4E00\u884C\u5199\u51FA\u8DEF\u5F84\u518D\u5F00\u59CB\u3002
 1. \u5148 \`tb_list_envs\` \u9009\u73AF\u5883(\u9700\u8981\u8DD1\u4EE3\u7801\u65F6)\u3002
-2. \u4E00\u5E55\u4E00\u6B21 \`tb_add_act\`(\u5148\u7528 \`tb_create_board\` \u5EFA\u7B2C\u4E00\u5E55\u6216\u524D\u51E0\u5E55);\u603B\u5171 \u22643 \u5E55\u65F6\u624D\u7528 \`tb_create_board\` \u4E00\u6B21\u5EFA\u5B8C\u3002
-3. \u6BCF\u6B21\u7ED3\u679C\u91CC\u7684 \`problems\` \u975E\u7A7A\u5C31\u8BFB\u4E00\u904D,\u5728\u4E0B\u4E00\u5E55\u91CC\u4FEE\u6B63(\u88AB\u4E22\u5F03\u7684\u6761\u76EE\u8981\u91CD\u5199)\u3002
-4. \u6BCF\u5E55\u7ED3\u679C\u9996\u884C\u662F\u7ED9\u7528\u6237\u770B\u7684\u8FDB\u5EA6\u884C,\u539F\u6837\u8F6C\u7ED9\u7528\u6237\u3002
-5. \u5168\u90E8\u5B8C\u6210\u540E:\u4E00\u53E5\u8BDD\u603B\u7ED3 + \u677F\u94FE\u63A5 + \u300C\u8BF4\u300E\u8DD1\u4E00\u4E0B E12\u300F\u6211\u5C31\u5728\u73AF\u5883\u91CC\u8DD1\u300D(E12 \u6362\u6210\u5B9E\u9645\u7684\u3001\u5E26 env \u7684\u4EE3\u7801\u5757\u7F16\u53F7;\u6CA1\u6709\u5E26 env \u7684\u4EE3\u7801\u5757\u5C31\u4E0D\u8BF4\u8FD9\u53E5)\u3002
+2. **\u7B2C\u4E00\u5E55\u6C38\u8FDC\u662F\u300C\u9884\u544A\u300D**(Marvin 1009):\`id:"outline"\`,\u6807\u9898\u5982\u300C\u4ECA\u5929\u7684\u8DEF\u7EBF\u300D,\`layout:"column"\`(\u4E00\u5C4F\u653E\u5F97\u4E0B);\u5F00\u5934\u4E00\u53E5 heading \u8BF4\u6E05\u5B66\u5B8C\u80FD\u505A\u5230\u4EC0\u4E48,\u518D\u7528\u4E09\u4E2A group:\u300C\u6211\u4EEC\u4F1A\u8BB2\u300D(\u540E\u9762\u6BCF\u4E00\u5E55\u4E00\u884C,\u7F16\u53F7\u548C\u6807\u9898\u4E0E\u771F\u6B63\u7684\u5E55\u4E00\u81F4)\u3001\u300C\u52A8\u624B\u5B9E\u9A8C\u300D(\u8981\u8DD1\u4EC0\u4E48\u3001\u5728\u54EA\u4E2A\u73AF\u5883\u3001\u770B\u4EC0\u4E48\u73B0\u8C61;\u6CA1\u6709\u5B9E\u9A8C\u5C31\u5199\u8981\u770B\u7684\u56FE\u6216\u8981\u63A8\u7684\u516C\u5F0F)\u3001\u300C\u5B66\u5B8C\u4F60\u4F1A\u300D(2\u20133 \u6761\u80FD\u68C0\u9A8C\u7684\u6536\u83B7)\u3002\u5185\u5BB9\u6765\u81EA\u7B2C 0 \u6B65\u548C\u5B66\u5458\u5BF9\u9F50\u8FC7\u7684\u8DEF\u5F84;\u7B2C 0 \u6B65\u6838\u5BF9\u8FC7\u7684 brief \u8DDF\u7740\u8FD9\u4E00\u5E55\u8D70(\u63D2\u4EF6:\`tb_create_board\` \u7684 \`spec.brief\`;\u677F\u4E0A AI \u52A9\u624B:\u7B2C\u4E00\u6B21 \`tb_add_act\` \u7684 \`brief\` \u53C2\u6570);\u4E4B\u540E\u8BA1\u5212\u53D8\u4E86,\u7528 \`tb_update\` \u6539\u9884\u544A\u91CC\u5BF9\u5E94\u7684\u90A3\u4E00\u884C\u3002\u8BB2\u8BFE\u65F6\u5B83\u5C31\u662F\u7B2C\u4E00\u5C4F\u3002
+3. \u4E00\u5E55\u4E00\u6B21 \`tb_add_act\`(\u5148\u7528 \`tb_create_board\` \u5EFA\u9884\u544A\u5E55\u6216\u524D\u51E0\u5E55);\u603B\u5171 \u22643 \u5E55(\u542B\u9884\u544A)\u65F6\u624D\u7528 \`tb_create_board\` \u4E00\u6B21\u5EFA\u5B8C\u3002
+4. \u6BCF\u6B21\u7ED3\u679C\u91CC\u7684 \`problems\` \u975E\u7A7A\u5C31\u8BFB\u4E00\u904D,\u5728\u4E0B\u4E00\u5E55\u91CC\u4FEE\u6B63(\u88AB\u4E22\u5F03\u7684\u6761\u76EE\u8981\u91CD\u5199)\u3002
+5. \u6BCF\u5E55\u7ED3\u679C\u9996\u884C\u662F\u7ED9\u7528\u6237\u770B\u7684\u8FDB\u5EA6\u884C,\u539F\u6837\u8F6C\u7ED9\u7528\u6237\u3002
+6. \u5168\u90E8\u5B8C\u6210\u540E:\u4E00\u53E5\u8BDD\u603B\u7ED3 + \u677F\u94FE\u63A5 + \u300C\u8BF4\u300E\u8DD1\u4E00\u4E0B E12\u300F\u6211\u5C31\u5728\u73AF\u5883\u91CC\u8DD1\u300D(E12 \u6362\u6210\u5B9E\u9645\u7684\u3001\u5E26 env \u7684\u4EE3\u7801\u5757\u7F16\u53F7;\u6CA1\u6709\u5E26 env \u7684\u4EE3\u7801\u5757\u5C31\u4E0D\u8BF4\u8FD9\u53E5)\u3002
 
 ${EXAMPLES}`;
 var SCHEMA_GUIDE_EN = `# teachboard element contract (BoardSpec)
@@ -84695,10 +84760,11 @@ Every element gets a board-local number E<n> (from 1), written \`tb:<8-char boar
 ## How to work
 0. **Align first, then build.** Before creating a board, know three things: the goal (learn / explore / try what, and how far), the background (what they already know, where they are stuck) and the references (which book / course / paper / code to follow, any material of their own). Not clear from the conversation \u2192 ask in ONE message, at most 3 questions, each with 2\u20133 options to pick from. Already clear \u2192 do not ask; state a one-line profile plus the proposed learning path (the act list) and have the learner confirm or edit it. Build only after confirmation, and put what was agreed into \`brief\`. If the learner says "just build it" \u2192 skip the questions but still state the path in one line before starting.
 1. \`tb_list_envs\` first when code will run.
-2. One \`tb_add_act\` per act (start with \`tb_create_board\` for the first act(s)); use a single \`tb_create_board\` only for \u22643 acts total.
-3. If a result has \`problems\`, read them and fix in the next act (rewrite dropped items).
-4. The first line of each result is a progress line for the user \u2014 relay it as is.
-5. When done: a one-sentence summary + the board link + "say 'run E12' and I'll run it in the env" (use the id of a real code block that has an env; skip this line if no block has one).
+2. **The first act is always the outline.** \`id:"outline"\`, a title like "Today's route", \`layout:"column"\` (fits one screen): one heading sentence saying what the learner can do afterwards, then three groups \u2014 "What we'll cover" (one line per later act, numbered, titles matching the real acts), "Experiment" (what runs, in which env, what to watch; if nothing runs, the figure to look at or the formula to derive) and "You'll walk away with" (2\u20133 checkable takeaways). Build it from the path agreed in step 0, and send the step-0 brief with this act (plugin: \`spec.brief\` on \`tb_create_board\`; board assistant: the \`brief\` argument of the first \`tb_add_act\`); if the plan changes later, fix the matching line with \`tb_update\`. In lecture mode it is the opening screen.
+3. One \`tb_add_act\` per act (start with \`tb_create_board\` for the outline or the first few acts); use a single \`tb_create_board\` only for \u22643 acts total, outline included.
+4. If a result has \`problems\`, read them and fix in the next act (rewrite dropped items).
+5. The first line of each result is a progress line for the user \u2014 relay it as is.
+6. When done: a one-sentence summary + the board link + "say 'run E12' and I'll run it in the env" (use the id of a real code block that has an env; skip this line if no block has one).
 
 ${EXAMPLES_EN}`;
 
@@ -85305,6 +85371,7 @@ function registerBoardTools(server2, d6) {
           const parts = [`${String(b6.boardId)}\u300C${String(b6.title ?? "")}\u300D`, `${Number(b6.elementCount) || 0} \u4E2A\u5143\u7D20`];
           const pend = Number(b6.pendingOps) || 0;
           if (pend) parts.push(`${pend} \u6B65\u5F85\u843D\u5730`);
+          if (typeof b6.goal === "string" && b6.goal.trim()) parts.push(`\u76EE\u6807:${b6.goal.trim().slice(0, 60)}`);
           parts.push(ago(b6.updatedAt, d6.now()));
           if (typeof b6.project === "string" && b6.project) parts.push(`\u9879\u76EE\u300C${b6.project}\u300D`);
           return parts.join(" \xB7 ");
@@ -85452,7 +85519,8 @@ ${RUN_HINT}`;
         const items = Array.isArray(r6.items) ? r6.items : [];
         const pend = Number(r6.pendingOps) || 0;
         const out = [
-          `${boardId}\u300C${String(r6.title ?? "")}\u300D\xB7 ${acts.length} \u5E55 \xB7 ${items.length} \u4E2A\u6761\u76EE${pend ? ` \xB7 ${pend} \u6B65\u5F85\u5728\u6D4F\u89C8\u5668\u843D\u5730` : ""} \xB7 ${boardUrl(boardId)}`
+          `${boardId}\u300C${String(r6.title ?? "")}\u300D\xB7 ${acts.length} \u5E55 \xB7 ${items.length} \u4E2A\u6761\u76EE${pend ? ` \xB7 ${pend} \u6B65\u5F85\u5728\u6D4F\u89C8\u5668\u843D\u5730` : ""} \xB7 ${boardUrl(boardId)}`,
+          ...briefLines(r6.brief)
         ];
         const short = (ref) => {
           const m4 = /\/(E\d+)$/.exec(String(ref));
@@ -85492,6 +85560,14 @@ ${RUN_HINT}`;
       }
     }
   );
+}
+function briefLines(b6) {
+  if (!isObj3(b6) || typeof b6.goal !== "string" || !b6.goal.trim()) return [];
+  const out = [`\u7B80\u62A5(\u548C\u5B66\u5458\u6838\u5BF9\u8FC7):\u76EE\u6807 ${b6.goal.trim()}`];
+  if (typeof b6.background === "string" && b6.background.trim()) out.push(`  \u80CC\u666F:${b6.background.trim()}`);
+  if (Array.isArray(b6.references) && b6.references.length) out.push(`  \u53C2\u8003:${b6.references.map(String).join(" | ")}`);
+  if (Array.isArray(b6.path) && b6.path.length) out.push(`  \u8DEF\u5F84:${b6.path.map((p2, i6) => `${i6 + 1}.${String(p2)}`).join(" \u2192 ")}`);
+  return out;
 }
 var WARM_POLL_MS = 5e3;
 var WARM_MAX_MS = 5e4;
