@@ -7,6 +7,7 @@ description: 列出所有 lab 命令
 
 向学员展示下面这份 Parallight Lab 命令清单(原样、简洁):
 
+- /openlabs-test — OpenLabs 总入口 — 学课程 / 做实验 / 把想学的主题画成白板 / 连接白板账户;参数 connect、想学的主题,或留空选菜单
 - /lab-help — 列出所有 lab 命令
 - /lab — Parallight Lab 主入口 — 显示可用 lab 列表 + 当前进度 + 未读通知
 - /lab-login — 登录 Parallight Lab（邮箱 + 4 位个人 PIN）

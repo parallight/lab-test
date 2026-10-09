@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "openlabs-test": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/bundle/server.js"
+      ],
+      "env": {
+        "PARALLIGHT_PLUGIN_NAME": "openlabs-test",
+        "PARALLIGHT_BACKEND_URL": "https://test.lab-agent.parallight.ai",
+        "PARALLIGHT_TEACHBOARD_BASE": "https://test.lab.parallight.ai"
+      }
+    }
+  }
+}

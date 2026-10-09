@@ -1,9 +1,26 @@
 ---
-name: teachboard
-description: 把你想学的主题画成一块 teachboard 白板(逐幕上板,代码块可在云端环境里跑);connect = 连接你的白板账户
+name: openlabs-test
+description: OpenLabs 总入口 — 学课程 / 做实验 / 把想学的主题画成白板 / 连接白板账户;参数 connect、想学的主题,或留空选菜单
 ---
 
-<!-- AUTO-GENERATED from commands-src/teachboard.md — do not edit. Run `pnpm gen:commands`. -->
+<!-- AUTO-GENERATED from commands-src/openlabs.md — do not edit. Run `pnpm gen:commands`. -->
+
+参数 = `$ARGUMENTS`(去掉多余空格)。这是插件的总入口,先分流,再按下面对应的一节做:
+
+- **参数为空** → 用选项卡(AskUserQuestion):学课程(看可用的 lab 和进度) / 做实验(开始 / 继续一个 lab) / 画成白板(把一个主题逐幕上板) / 连接白板账户。「学课程」「做实验」→「学课程」一节;「画成白板」→ 先问学员想学什么主题,再按「白板」一节做;「连接白板账户」→「白板」一节里「参数是 connect」的做法。
+- **参数是 `connect`** →「白板」一节里「参数是 connect」的做法。
+- **其它(想学的主题 / 参考资料)** →「白板」一节,参数就是主题。
+
+## 学课程(与 /lab 相同)
+
+0. 在显示 lab 列表**之前**，先调 `get_inbox`（**`mark_seen` 传 false**，只 peek 不标记已读）。若有来自Mentor的未读批改/回复，在最前面提示一行「📬 Mentor回复了你的 X 条内容，/lab-read 查看」，然后再正常显示 lab 列表。没有就跳过这一步。
+1. 调 `list_labs` 工具显示学员可用的 lab。
+2. 如果工具返回"还没登录"，引导学员用 /lab-login 登录，不要继续。
+3. 如果有进行中的 lab，先显示当前进度。
+4. 列出可用 lab 后，用选项卡(AskUserQuestion):让学员选要开始/继续哪个 lab / 先看看，不要让他打字输 lab id。学员选定后调 `start_lab`。
+5. 学员只是想看看就别强推，让他选"先看看"之类的选项。
+
+## 白板(与 /teachboard 相同)
 
 参数 = `$ARGUMENTS`(去掉多余空格)。
 
@@ -23,6 +40,6 @@ description: 把你想学的主题画成一块 teachboard 白板(逐幕上板,�
 3. 建板:整块板只有 ≤3 幕时可以一次 `tb_create_board`;否则先 `tb_create_board` 建第一幕,之后**一幕一次** `tb_add_act` 往后加,不要攒成一大坨。
 4. **每次**工具返回后,把结果的**第一行**(进度行,例如「✅ 第 3/7 幕… · 打开 <链接>」)原样发给学员,再继续下一幕。
 5. 全部上板后:用两三句话总结这块板讲了什么,给出板的链接;若板上有绑了环境的代码块,再加一句「说『跑一下 E12』我就在环境里跑」(E12 换成板上真实的代码块编号)。
-6. **改板(学员回来追问 / 让你改)**:学员粘来 `tb:<板>/E<n>` 这样的元素编号时,先 `tb_describe` 读它的全文、所在幕、箭头和邻居,再 `tb_reply` 把回答方框放在它旁边(回答原文在对话里也给一遍);改代码 = `tb_update {boardId, changes:[{entity, code}]}` 然后 `tb_run`,**每条改动只填一个字段**(text / latex / code / label / tone);结果里的 `conflicts` 是学员自己改过的元素,先 `tb_describe` 看过再决定要不要覆盖;删元素用 `tb_delete`(删之前跟学员确认);调幕序 `tb_set_acts`;代码块没绑环境就 `tb_bind_env` 再跑。这些工具的结果第一行同样原样发给学员。
+6. **改板(学员回来追问 / 让你改)**:学员粘来 `tb:<板>/E<n>` 这样的元素编号时,先 `tb_describe` 读它的全文、所在幕、箭头和邻居,再 `tb_reply` 把回答方框放在它旁边(回答原文在对话里也给一遍);改代码 = `tb_update {boardId, changes:[{entity, code}]}` 然后 `tb_run`,**每条改动只填一个字段**(text / ascii(公式,AsciiMath,优先)/ latex(AsciiMath 写不出来时)/ code / label / tone);结果里的 `conflicts` 是学员自己改过的元素,先 `tb_describe` 看过再决定要不要覆盖;删元素用 `tb_delete`(删之前跟学员确认);调幕序 `tb_set_acts`;代码块没绑环境就 `tb_bind_env` 再跑。这些工具的结果第一行同样原样发给学员。
 
-**边界**:工具说「还没连上 / 未连接」→ 让学员先 /teachboard connect;返回 402(额度 / 预算不够)→ 原话转达,不要重试;其它错误按工具给的下一步走,不要把原始报错甩给学员。
+**边界**:工具说「还没连上 / 未连接」→ 让学员先 /openlabs-test connect;返回 402(额度 / 预算不够)→ 原话转达,不要重试;其它错误按工具给的下一步走,不要把原始报错甩给学员。

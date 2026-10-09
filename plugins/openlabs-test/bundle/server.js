@@ -81170,6 +81170,9 @@ var PARALLIGHT_VERSION = "0.1.26-phase1";
 import { homedir } from "node:os";
 import { join } from "node:path";
 var BACKEND_URL = process.env.PARALLIGHT_BACKEND_URL ?? "https://lab-agent.parallight.ai";
+var rawPluginName = process.env.PARALLIGHT_PLUGIN_NAME ?? "";
+var PLUGIN_NAME = /^[a-z0-9][a-z0-9-]{0,39}$/.test(rawPluginName) ? rawPluginName : "openlabs";
+var PLUGIN_MARKET = PLUGIN_NAME.endsWith("-test") ? "parallight-test" : "parallight-cc";
 var AUTH_DIR = join(homedir(), ".parallight");
 var AUTH_FILE = join(AUTH_DIR, "auth.json");
 var LLM_PROXY_URL = `${BACKEND_URL}/api/llm`;
@@ -81821,10 +81824,10 @@ function isOutdated(installed, latest) {
   if (b6[1] !== a6[1]) return b6[1] > a6[1];
   return b6[2] > a6[2];
 }
-function updateBanner(latest) {
+function updateBanner(latest, names = { plugin: PLUGIN_NAME, market: PLUGIN_MARKET }) {
   return [
     `> \u{1F514} **\u63D2\u4EF6\u6709\u65B0\u7248\u53EF\u7528(${latest})\u3002** \u4F60\u88C5\u7684\u662F\u65E7\u7248,\u53EF\u80FD\u7F3A\u65B0\u547D\u4EE4\u6216\u4FEE\u590D(\u6BD4\u5982 \`/hotspot\`)\u3002`,
-    `> \u66F4\u65B0\u65B9\u6CD5:\u8FD0\u884C \`/plugin marketplace update parallight-cc\`,\u518D \`/reload-plugins\`(\u6216\u91CD\u542F Claude Code)\u3002`
+    `> \u66F4\u65B0\u65B9\u6CD5:\u8FD0\u884C \`/plugin marketplace update ${names.market}\`,\u518D \`/plugin update ${names.plugin}@${names.market}\`,\u7136\u540E \`/reload-plugins\`(\u6216\u91CD\u542F Claude Code)\u3002`
   ].join("\n");
 }
 function maybeUpdateBanner(installed, latest) {
@@ -84460,7 +84463,7 @@ var EXAMPLE_ZH = {
         { kind: "text", id: "q", role: "heading", text: "100 \u4E07\u4E2A\u6570\u5404\u52A0 1,\u80FD\u4E0D\u80FD\u540C\u65F6\u505A?" },
         { kind: "shape", id: "cpu", shape: "rect", label: "CPU:\u4E00\u4E2A\u4E2A\u7B97", tone: "neutral" },
         { kind: "shape", id: "gpu", shape: "rect", label: "GPU:\u6BCF\u4E2A\u7EBF\u7A0B\u7B97\u4E00\u4E2A", tone: "accent" },
-        { kind: "math", id: "idx", latex: "i = \\text{blockIdx.x}\\cdot\\text{blockDim.x} + \\text{threadIdx.x}" }
+        { kind: "math", id: "idx", ascii: 'i = "blockIdx.x" * "blockDim.x" + "threadIdx.x"' }
       ],
       edges: [{ from: "cpu", to: "gpu", label: "\u6362\u4E2A\u505A\u6CD5", style: "arrow" }]
     },
@@ -84493,7 +84496,7 @@ var EXAMPLE_EN = {
       items: [
         { kind: "text", id: "q", role: "heading", text: "How do you find the bottom of a valley in the fog?" },
         { kind: "plot", id: "bowl", expr: "x^2", xmin: -3, xmax: 3, caption: "loss(x) = x\xB2" },
-        { kind: "math", id: "step", latex: "x \\leftarrow x - \\eta\\, \\nabla f(x)" },
+        { kind: "math", id: "step", ascii: "x larr x - eta grad f(x)" },
         { kind: "quote", id: "src", text: "Take a small step against the gradient.", source: "any optimization textbook" }
       ],
       edges: [{ from: "bowl", to: "step", style: "dashed" }]
@@ -84552,7 +84555,7 @@ type Act = {
 };
 type Item =
   | { kind:"text";   id; text; role?:"heading"|"body"|"note" }             // text \u2264600 \u5B57
-  | { kind:"math";   id; latex; display?:boolean }                          // latex \u2264600 \u5B57
+  | { kind:"math";   id; ascii; display?:boolean }                          // \u516C\u5F0F\u7528 AsciiMath \u5199(\u2264600 \u5B57),\u89C1\u4E0B\u300C\u516C\u5F0F\u300D;\u5B9E\u5728\u5199\u4E0D\u51FA\u6765\u624D\u7528 latex \u4EE3\u66FF ascii
   | { kind:"code";   id; language:"python"|"javascript"|"bash"|"c"|"cpp"|"cuda"; code; caption?;
                      env?: string;   // \u73AF\u5883 id,\u5FC5\u987B\u6765\u81EA tb_list_envs;\u7F3A\u7701\u7EE7\u627F defaultEnv;\u90FD\u6CA1\u6709 = \u9ED8\u8BA4\u6C99\u7BB1
                      recipe?: string;   // \u73AF\u5883\u914D\u65B9 id(tb_env_customize \u7ED9\u7684);\u5FC5\u987B\u540C\u65F6\u6709 env,\u4E14\u914D\u65B9\u7684\u57FA\u7840\u73AF\u5883\u987B\u7B49\u4E8E\u5757\u7684 env
@@ -84573,6 +84576,15 @@ type Edge = { from: string; to: string; label?: string; style?: "arrow"|"line"|"
 glyph \u7684 params \u539F\u6837\u4EA4\u7ED9\u56FE\u5143\u6E32\u67D3\u5668,\u9876\u5C42\u952E:number_line {min,max,step,intervals,points,title} \xB7 function_plot {xDomain,yDomain,curves,xScale,yScale,markers,xLabel,yLabel,title} \xB7 bar_compare {bars,max,unit,title} \xB7 array_cells {cells,pointers,title} \xB7 heatmap {data,min,max,scale,hue,annotate,rowLabels,colLabels,title} \xB7 frame_plot {xDomain,yDomain,frames,xScale,yScale,xLabel,slider,title}\u3002\u62FF\u4E0D\u51C6\u7ED3\u6784\u65F6\u6539\u7528 chart / plot / figure\u3002
 caption \u2264120 \u5B57\u3002\`image\` \u672C\u671F\u4E0D\u652F\u6301(\u4F1A\u88AB\u8DF3\u8FC7),\u8981\u56FE\u5C31\u7528 figure\u3002
 \u4FDD\u7559 id(\u4F1A\u88AB\u6539\u540D):title\u3001e<\u6570\u5B57>,\u4EE5\u53CA\u4EE5 -cap / -src / -box / -title / -lbl / -grp \u7ED3\u5C3E\u7684 id\u3002
+
+## \u516C\u5F0F:\u7528 AsciiMath(\`ascii\` \u5B57\u6BB5)
+\u5B66\u5458\u4F1A\u53CC\u51FB\u516C\u5F0F\u81EA\u5DF1\u6539\u3001\u81EA\u5DF1\u8C03,AsciiMath \u8BFB\u8D77\u6765\u5C31\u50CF\u5F0F\u5B50\u672C\u8EAB,LaTeX \u7684\u53CD\u659C\u6760\u547D\u4EE4\u5BF9\u4ED6\u4EEC\u662F\u8D1F\u62C5\u3002\u6240\u4EE5\u516C\u5F0F\u4E00\u5F8B\u5199 \`ascii\`;\u53EA\u6709 AsciiMath \u8868\u8FBE\u4E0D\u4E86\u7684\u7ED3\u6784(\u5C11\u89C1)\u624D\u6539\u7528 \`latex\` \u5B57\u6BB5,\u4E24\u4E2A\u90FD\u7ED9\u65F6\u7528 \`ascii\`\u3002
+- \u5E38\u7528:\`x^2\` \`x_i\` \`x_(t-1)\` \`a/b\` \`(a+b)/(c+d)\` \`sqrt(x)\` \`sum_(i=1)^n\` \`prod_i\` \`int_0^1 f(x) dx\` \`lim_(n->oo)\` \`(del L)/(del theta)\` \`grad f\` \`hat y\` \`bar alpha_t\` \`x in RR^d\` \`f: RR^n -> RR\` \`norm(x)\` \`abs(x)\` \`[[a,b],[c,d]]\`(\u77E9\u9635)\`cc N(mu, sigma^2)\`(\u82B1\u4F53)\`x larr y\`(\u8D4B\u503C)\u3002
+- \u5E0C\u814A\u5B57\u6BCD\u76F4\u63A5\u5199\u540D\u5B57:\`alpha beta eta theta lambda mu sigma epsilon\`\u3002\u4E58\u53F7 \`*\`(\u70B9\u4E58)\u6216 \`xx\`(\u53C9\u4E58)\u3002
+- \u666E\u901A\u5355\u8BCD\u3001\u51FD\u6570\u540D\u653E\u5F15\u53F7\u91CC:\`"softmax"(QK^T/sqrt(d))\`\u3001\`"loss" = ...\`\u3001\`D_("KL")(p \u2225 q)\`\u3002
+- \u6613\u9519:\u671F\u671B\u5199 \`bbb E[x]\`(\`EE\` \u662F\u300C\u5B58\u5728\u300D\u2203);argmin / argmax \u5199 \`"argmin"_c\`(\u4E0D\u52A0\u5F15\u53F7\u4F1A\u62C6\u6210 a r g);\u8303\u6570\u4E0D\u8981\u5199 \`||x||\`,\u5199 \`norm(x)\`;\u4E24\u4E2A\u5206\u5E03\u4E4B\u95F4\u7528 \`\u2225\`,\u522B\u7528 \`||\`\u3002
+- \u591A\u884C\u63A8\u5BFC:\u6BCF\u884C\u4E00\u4E2A\u5F0F\u5B50\u3001\u7528\u6362\u884C\u5206\u5F00,\u677F\u4E0A\u81EA\u52A8\u6309 = \u5BF9\u9F50\u3002
+- \u4F8B:\`hat theta = "argmax"_theta prod_i p(x_i ; theta)\` \xB7 \`x_t = sqrt(bar alpha_t) x_0 + sqrt(1 - bar alpha_t) epsilon\` \xB7 \`"argmin"_c bbb E[(a-c)^2] = bbb E[a]\`
 
 ## \u4E0A\u9650(\u670D\u52A1\u7AEF\u6267\u884C,\u8D85\u4E86\u622A\u65AD/\u4E22\u5F03\u5E76\u5199\u8FDB problems)
 acts \u226412 \xB7 \u6BCF\u5E55 items \u226412 \xB7 text \u2264600 \u5B57 \xB7 code \u22644000 \u5B57 \xB7 svg \u226460KB \xB7 chart \u603B\u70B9\u6570 \u22642000 \xB7 \u6574\u4EFD spec \u2264300KB \xB7 files \u22645 \u4E2A\u5404 \u226464KB \xB7 \u5E55\u6807\u9898 \u226440 \u5B57 \xB7 \u677F\u540D \u226460 \u5B57\u3002
@@ -84630,7 +84642,7 @@ type Act = {
 };
 type Item =
   | { kind:"text";   id; text; role?:"heading"|"body"|"note" }             // text \u2264600 chars
-  | { kind:"math";   id; latex; display?:boolean }                          // latex \u2264600 chars
+  | { kind:"math";   id; ascii; display?:boolean }                          // write formulas in AsciiMath (\u2264600 chars), see "Formulas" below; use latex instead of ascii only when AsciiMath cannot express it
   | { kind:"code";   id; language:"python"|"javascript"|"bash"|"c"|"cpp"|"cuda"; code; caption?;
                      env?: string;   // env id, must come from tb_list_envs; falls back to defaultEnv; none = default sandbox
                      recipe?: string;   // environment recipe id (from tb_env_customize); requires env, and the recipe's base env must equal the block's env
@@ -84651,6 +84663,15 @@ type Edge = { from: string; to: string; label?: string; style?: "arrow"|"line"|"
 glyph params go straight to the primitive renderer; top-level keys: number_line {min,max,step,intervals,points,title} \xB7 function_plot {xDomain,yDomain,curves,xScale,yScale,markers,xLabel,yLabel,title} \xB7 bar_compare {bars,max,unit,title} \xB7 array_cells {cells,pointers,title} \xB7 heatmap {data,min,max,scale,hue,annotate,rowLabels,colLabels,title} \xB7 frame_plot {xDomain,yDomain,frames,xScale,yScale,xLabel,slider,title}. When unsure of the shape, use chart / plot / figure instead.
 caption \u2264120 chars. \`image\` is not supported this phase (skipped); use figure.
 Reserved ids (renamed): title, e<digits>, and ids ending in -cap / -src / -box / -title / -lbl / -grp.
+
+## Formulas: AsciiMath (the \`ascii\` field)
+Learners double-click formulas to edit and debug them; AsciiMath reads like the formula itself, LaTeX backslash commands get in their way. So write every formula as \`ascii\`; switch to the \`latex\` field only for the rare structure AsciiMath cannot express. If both are given, \`ascii\` wins.
+- Common: \`x^2\` \`x_i\` \`x_(t-1)\` \`a/b\` \`(a+b)/(c+d)\` \`sqrt(x)\` \`sum_(i=1)^n\` \`prod_i\` \`int_0^1 f(x) dx\` \`lim_(n->oo)\` \`(del L)/(del theta)\` \`grad f\` \`hat y\` \`bar alpha_t\` \`x in RR^d\` \`f: RR^n -> RR\` \`norm(x)\` \`abs(x)\` \`[[a,b],[c,d]]\` (matrix) \`cc N(mu, sigma^2)\` (calligraphic) \`x larr y\` (assignment).
+- Greek letters by name: \`alpha beta eta theta lambda mu sigma epsilon\`. Multiplication \`*\` (dot) or \`xx\` (cross).
+- Plain words and function names go in quotes: \`"softmax"(QK^T/sqrt(d))\`, \`"loss" = ...\`, \`D_("KL")(p \u2225 q)\`.
+- Pitfalls: expectation is \`bbb E[x]\` (\`EE\` means "exists" \u2203); argmin / argmax is \`"argmin"_c\` (unquoted it splits into a r g); norms are \`norm(x)\`, not \`||x||\`; between two distributions use \`\u2225\`, not \`||\`.
+- Multi-line derivations: one equation per line, separated by newlines; the board aligns them on =.
+- Examples: \`hat theta = "argmax"_theta prod_i p(x_i ; theta)\` \xB7 \`x_t = sqrt(bar alpha_t) x_0 + sqrt(1 - bar alpha_t) epsilon\` \xB7 \`"argmin"_c bbb E[(a-c)^2] = bbb E[a]\`
 
 ## Limits (enforced by the server; overflow is cut/dropped and reported in problems)
 acts \u226412 \xB7 items per act \u226412 \xB7 text \u2264600 \xB7 code \u22644000 chars \xB7 svg \u226460KB \xB7 chart points \u22642000 total \xB7 whole spec \u2264300KB \xB7 files \u22645 each \u226464KB \xB7 act title \u226440 \xB7 board title \u226460.
@@ -84724,7 +84745,7 @@ var ENTITY_REF_RE = /^tb:([0-9a-f]{8})\/E(\d+)$/;
 var BOARD_ID_RE = /^[0-9a-f]{8}$/;
 var REF_HINT = "\u5143\u7D20\u7F16\u53F7\u5E94\u5199\u6210 tb:<8 \u4F4D\u677F id>/E<n>(\u5982 tb:1a2b3c4d/E12;\u53F3\u952E\u5143\u7D20 \u2192 Entity ID \u590D\u5236,\u6216\u4ECE tb_get_board \u8BFB)";
 var TONES = ["neutral", "accent", "warn", "ok"];
-var UPDATE_FIELDS = ["text", "latex", "code", "label", "tone"];
+var UPDATE_FIELDS = ["text", "ascii", "latex", "code", "label", "tone"];
 var MAX_BATCH = 100;
 var problemList = (p2) => Array.isArray(p2) ? p2.map((x) => typeof x === "string" ? x : JSON.stringify(x)) : [];
 var problemsBlock = (p2) => {
@@ -84789,7 +84810,7 @@ ${probs.map((x) => `- ${x}`).join("\n")}` : "";
     "tb_describe",
     {
       title: "Describe teachboard entities",
-      description: "\u8BFB\u4E00\u4E2A(\u6216\u51E0\u4E2A)\u5143\u7D20\u7684\u5B8C\u6574\u5185\u5BB9:\u6587\u5B57 / \u516C\u5F0F latex / \u4EE3\u7801\u5168\u6587\u3001\u6240\u5728\u5E55\u3001\u8FDB\u51FA\u7684\u7BAD\u5934\u3001\u51E0\u4F55\u90BB\u5C45\u3001\u7528\u6237\u6700\u8FD1\u5BF9\u5B83\u7684\u6539\u52A8\u3002\u7528\u6237\u7C98\u4E86 tb:\u2026/E12 \u8FFD\u95EE\u3001\u6216\u6539\u4EE3\u7801\u524D,\u5148\u7528\u5B83\u770B\u6E05;tb_get_board \u53EA\u7ED9\u6458\u8981\u3002",
+      description: "\u8BFB\u4E00\u4E2A(\u6216\u51E0\u4E2A)\u5143\u7D20\u7684\u5B8C\u6574\u5185\u5BB9:\u6587\u5B57 / \u516C\u5F0F(ascii \u539F\u6587 + \u6E32\u67D3\u7528\u7684 latex)/ \u4EE3\u7801\u5168\u6587\u3001\u6240\u5728\u5E55\u3001\u8FDB\u51FA\u7684\u7BAD\u5934\u3001\u51E0\u4F55\u90BB\u5C45\u3001\u7528\u6237\u6700\u8FD1\u5BF9\u5B83\u7684\u6539\u52A8\u3002\u7528\u6237\u7C98\u4E86 tb:\u2026/E12 \u8FFD\u95EE\u3001\u6216\u6539\u4EE3\u7801\u524D,\u5148\u7528\u5B83\u770B\u6E05;tb_get_board \u53EA\u7ED9\u6458\u8981\u3002",
       inputSchema: {
         entities: external_exports.array(external_exports.string()).min(1).max(20).describe('\u5143\u7D20\u7F16\u53F7\u5217\u8868,\u5982 ["tb:1a2b3c4d/E12"]')
       }
@@ -84807,7 +84828,7 @@ ${probs.map((x) => `- ${x}`).join("\n")}` : "";
           if (typeof x.act === "string") head.push(`\u5E55 ${x.act}${typeof x.actTitle === "string" ? `\u300C${x.actTitle}\u300D` : ""}`);
           if (typeof x.env === "string" && x.env) head.push(`env ${x.env}`);
           const body = [];
-          for (const k6 of ["text", "latex", "code", "label"]) if (typeof x[k6] === "string" && x[k6]) body.push(`${k6}:
+          for (const k6 of ["text", "ascii", "latex", "code", "label"]) if (typeof x[k6] === "string" && x[k6]) body.push(`${k6}:
 ${String(x[k6])}`);
           const edges = isObj2(x.edges) ? x.edges : {};
           const ins = refs(edges.in, ""), outs = refs(edges.out, "");
@@ -84856,7 +84877,7 @@ ${String(x[k6])}`);
     "tb_update",
     {
       title: "Update teachboard entities",
-      description: "\u6539\u677F\u4E0A\u5DF2\u6709\u7684\u5143\u7D20,\u4E00\u6B21\u4E00\u6279:\u6BCF\u6761\u6539\u52A8\u53EA\u586B\u4E00\u4E2A\u5B57\u6BB5 \u2014\u2014 text(\u6587\u5B57)/ latex(\u516C\u5F0F)/ code(\u4EE3\u7801\u5757)/ label(\u5F62\u72B6\u6216\u7BAD\u5934\u7684\u6807\u7B7E)/ tone(\u5F62\u72B6\u914D\u8272 neutral|accent|warn|ok)\u3002\u6539\u4EE3\u7801\u540E\u53EF\u63A5 tb_run\u3002\u7528\u6237\u81EA\u5DF1\u6539\u8FC7\u7684\u5143\u7D20\u4F1A\u56DE conflicts,\u5148 tb_describe \u770B\u8FC7\u518D\u51B3\u5B9A\u3002\u7ED3\u679C\u9996\u884C\u7ED9\u7528\u6237\u3002",
+      description: "\u6539\u677F\u4E0A\u5DF2\u6709\u7684\u5143\u7D20,\u4E00\u6B21\u4E00\u6279:\u6BCF\u6761\u6539\u52A8\u53EA\u586B\u4E00\u4E2A\u5B57\u6BB5 \u2014\u2014 text(\u6587\u5B57)/ ascii(\u516C\u5F0F,AsciiMath,\u4F18\u5148\u7528\u5B83)/ latex(\u516C\u5F0F,AsciiMath \u5199\u4E0D\u51FA\u6765\u65F6\u624D\u7528)/ code(\u4EE3\u7801\u5757)/ label(\u5F62\u72B6\u6216\u7BAD\u5934\u7684\u6807\u7B7E)/ tone(\u5F62\u72B6\u914D\u8272 neutral|accent|warn|ok)\u3002\u6539\u4EE3\u7801\u540E\u53EF\u63A5 tb_run\u3002\u7528\u6237\u81EA\u5DF1\u6539\u8FC7\u7684\u5143\u7D20\u4F1A\u56DE conflicts,\u5148 tb_describe \u770B\u8FC7\u518D\u51B3\u5B9A\u3002\u7ED3\u679C\u9996\u884C\u7ED9\u7528\u6237\u3002",
       inputSchema: {
         boardId: external_exports.string().describe("\u677F id(8 \u4F4D hex)"),
         changes: external_exports.array(external_exports.record(external_exports.string(), external_exports.unknown())).min(1).max(MAX_BATCH).describe('[{entity:"tb:\u2026/E12", code:"\u2026"}, {entity:"tb:\u2026/E3", tone:"warn"}]'),
@@ -85003,7 +85024,7 @@ function tbHost(clientName, override) {
 var POLL_MS = 2e3;
 var FOREGROUND_MS = 5e4;
 function renderHuman(text, host) {
-  return text.split("{{connect}}").join(host === "cx" ? ":teachboard connect" : "/teachboard connect");
+  return text.split("{{connect}}").join(host === "cx" ? `:${PLUGIN_NAME} connect` : `/${PLUGIN_NAME} connect`);
 }
 var MAX_FAILURES = 5;
 var BAD_URL_MSG = "\u8FDE\u63A5\u5730\u5740\u5F02\u5E38,\u5DF2\u505C\u6B62;\u8BF7\u7A0D\u540E\u91CD\u8BD5";
@@ -86277,7 +86298,7 @@ function composeStatusV2(p2) {
 }
 
 // src/index.ts
-var SERVER_NAME = "parallight-lab";
+var SERVER_NAME = PLUGIN_NAME;
 var SERVER_BANNER = [
   "  \u250C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510",
   "  \u2502   PARALLIGHT    \u2502",
