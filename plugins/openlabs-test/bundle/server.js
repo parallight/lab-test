@@ -86247,7 +86247,7 @@ function registerTeachboardTools(rawServer, deps = {}) {
   const hinted = eventsOn ? withEventsHeader(reviewed, { ...eventsDeps, capMs: deps.hintCapMs ?? 1500 }) : reviewed;
   registerBoardTools(hinted, { client, base, now, human });
   registerEnvTools(hinted, { client, sleep: sleep3, human });
-  registerRecipeTools(hinted, { client, sleep: sleep3, human });
+  registerRecipeTools(hinted, { client, sleep: sleep3, human, base });
   registerRunTools(hinted, { client, human, host, sleep: sleep3, mine: sessionReviews });
   registerEntityTools(hinted, { client, base, human });
   registerProjectTools(hinted, { client, human });
@@ -86772,14 +86772,15 @@ function registerEnvTools(server2, d7) {
     }
   );
 }
-var RECIPE_POLL_MS = 5e3;
-var RECIPE_MAX_MS = 24e4;
 var ENV_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/;
 var RECIPE_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 var ENTITY_REF_RE2 = /^tb:([0-9a-f]{8})\/(E\d+)$/;
 var BIND_PENDING_RETRIES = 3;
 var APT_RE = /^[a-z0-9][a-z0-9+.-]{0,99}$/;
-var CUSTOMIZE_DESC = "\u5728\u4E00\u4E2A\u5E95\u5EA7\u73AF\u5883\u4E0A\u5EFA\u300C\u6211\u7684\u73AF\u5883\u300D(\u73AF\u5883\u914D\u65B9):\u52A0 Debian \u7CFB\u7EDF\u5305(apt)\u548C / \u6216 Python \u5305(add),\u53EF\u9644\u547D\u4EE4\u3002\u24EA \u89C4\u77E9(\u8BBE\u8BA1 \xA72):\u7528\u6237\u8BF4\u300C\u6211\u60F3\u5EFA\u4E2A X \u73AF\u5883\u300D\u300C\u6211\u60F3\u505A Y \u5B9E\u9A8C\u300D\u4E5F\u8D70\u8FD9\u91CC \u2014\u2014 \u5148\u4ECE\u76EE\u6807\u63A8\u65AD\u8981\u8DD1\u4EC0\u4E48\u3001\u8981\u54EA\u4E9B\u5E93 / \u7CFB\u7EDF\u5DE5\u5177 / \u663E\u5361;\u5148\u7528 tb_list_envs \u627E\u73B0\u6210\u7684(runtime.libs\u3001GPU\u3001tags \u80FD\u6EE1\u8DB3\u5C31\u63A8\u8350\u5B83,\u4E0D\u5EFA);\u5DEE\u4E00\u70B9\u624D\u5217\u65B9\u6848:\u5E95\u5EA7\u3001apt \u5305\u3001pip \u5305\u3001\u547D\u4EE4\u3001\u9A8C\u8BC1\u9884\u8BA1\u65F6\u957F(\u7CFB\u7EDF\u5305\u901A\u5E38\u5341\u51E0\u79D2\u5230\u51E0\u5206\u949F)\u548C\u8D39\u7528(\u6309\u5E95\u5EA7\u6BCF\u5C0F\u65F6\u4EF7),**\u7528\u6237\u660E\u786E\u540C\u610F\u540E**\u624D\u8C03\u672C\u5DE5\u5177;\u9A8C\u8BC1\u5931\u8D25\u8BFB verifyLog \u6539\u6E05\u5355\u518D\u8BD5,\u6700\u591A 3 \u8F6E,\u8FD8\u4E0D\u884C\u5C31\u505C\u4E0B\u8BF4\u660E\u5361\u70B9\u3002tb_run \u62A5 missingModule \u65F6\u76F4\u63A5\u52A0 Python \u5305,\u4E0D\u7528\u5148\u95EE\u3002\u2460 \u4EE3\u7801\u8DD1\u5728 teachboard \u4E91\u7AEF\u73AF\u5883\u91CC,\u4E0D\u5728\u7528\u6237\u7684\u7535\u8111\u4E0A:\u7F3A Python \u5305\u5FC5\u987B\u7528\u672C\u5DE5\u5177\u52A0,\u7EDD\u4E0D\u8981\u5728\u672C\u673A pip / uv / conda install\u3002\u2461 \u4F55\u65F6\u7528:\u7528\u6237\u8BF4\u300C\u5728 X \u73AF\u5883\u91CC\u88C5 / \u52A0 Y\u300D,\u6216 tb_run \u7684\u7ED3\u679C\u91CC\u6709 missingModule / ModuleNotFoundError\u2014\u2014\u540E\u8005\u76F4\u63A5\u88C5,\u4E0D\u7528\u5148\u95EE\u7528\u6237\u3002\u2462 \u53C2\u6570:env = \u5E95\u5EA7\u73AF\u5883 id(\u4EE3\u7801\u5757\u7ED1\u5B9A\u7684\u90A3\u4E2A);apt = Debian \u5305\u540D(\u4E0D\u5E26\u7248\u672C\u548C\u6E90,\u226430,\u5982 cmake\u3001libopenmpi-dev);add = PyPI \u5305\u540D(\u53EF\u5E26\u7248\u672C\u7EA6\u675F,\u226430);apt \u548C add \u81F3\u5C11\u7ED9\u4E00\u4E2A\u3002import \u540D\u548C\u5305\u540D\u4E0D\u4E00\u6837\u65F6\u7528\u5305\u540D(cv2\u2192opencv-python\u3001sklearn\u2192scikit-learn\u3001PIL\u2192Pillow),\u4F18\u5148\u7528 missingModule.package;\u4F20 entity(tb:<\u677F id>/E<n>)\u4F1A\u5728\u88C5\u597D\u540E\u628A\u914D\u65B9\u81EA\u52A8\u7ED1\u5230\u90A3\u4E2A\u4EE3\u7801\u5757\u3002\u2463 \u7ED3\u679C:\u9A8C\u8BC1\u8981 10 \u79D2\u5230\u51E0\u5206\u949F(\u672C\u5DE5\u5177\u6700\u591A\u7B49 4 \u5206\u949F);ready \u540E\u7528\u8BE5 recipe \u91CD\u65B0 tb_run;failed \u5C31\u770B verifyLog \u6539\u914D\u65B9\u518D\u63D0\u4EA4;\u8FD8\u5728\u9A8C\u8BC1\u4E0D\u7B97\u5931\u8D25,\u7A0D\u540E\u7528 tb_env_recipes \u67E5;\u88AB\u62D2\u7684\u7CFB\u7EDF\u5305\u539F\u6837\u8F6C\u544A\u7528\u6237\u3002\u2464 \u4E0D\u80FD:\u5185\u6838 / \u663E\u5361\u9A71\u52A8 / CUDA / systemd / docker \u8FD9\u7C7B\u7CFB\u7EDF\u7EC4\u4EF6(\u8981\u7684\u8BDD\u8BF7\u7528\u6237\u53D1\u90AE\u4EF6\u8054\u7CFB\u6211\u4EEC);\u4E5F\u4E0D\u80FD\u6539\u5E95\u5EA7\u91CC\u5DF2\u6709 Python \u5305\u7684\u7248\u672C(\u53EA\u52A0\u4E0D\u6539)\u3002";
+function envProposalUrl(base, id, board) {
+  return `${base.replace(/\/+$/, "")}/lab/teachboard?${board ? `board=${board}&` : ""}envProposal=${encodeURIComponent(id)}`;
+}
+var CUSTOMIZE_DESC = "\u5728\u4E00\u4E2A\u5E95\u5EA7\u73AF\u5883\u4E0A\u5EFA\u300C\u6211\u7684\u73AF\u5883\u300D(\u73AF\u5883\u914D\u65B9):\u52A0 Debian \u7CFB\u7EDF\u5305(apt)\u548C / \u6216 Python \u5305(add),\u53EF\u9644\u547D\u4EE4\u3002\u24EA \u89C4\u77E9(\u8BBE\u8BA1 \xA72):\u7528\u6237\u8BF4\u300C\u6211\u60F3\u5EFA\u4E2A X \u73AF\u5883\u300D\u300C\u6211\u60F3\u505A Y \u5B9E\u9A8C\u300D\u4E5F\u8D70\u8FD9\u91CC \u2014\u2014 \u5148\u4ECE\u76EE\u6807\u63A8\u65AD\u8981\u8DD1\u4EC0\u4E48\u3001\u8981\u54EA\u4E9B\u5E93 / \u7CFB\u7EDF\u5DE5\u5177 / \u663E\u5361;\u5148\u7528 tb_list_envs \u627E\u73B0\u6210\u7684(runtime.libs\u3001GPU\u3001tags \u80FD\u6EE1\u8DB3\u5C31\u63A8\u8350\u5B83,\u4E0D\u5EFA);\u5DEE\u4E00\u70B9\u624D\u5217\u65B9\u6848:\u5E95\u5EA7\u3001apt \u5305\u3001pip \u5305\u3001\u547D\u4EE4\u3001\u9A8C\u8BC1\u9884\u8BA1\u65F6\u957F(\u7CFB\u7EDF\u5305\u901A\u5E38\u5341\u51E0\u79D2\u5230\u51E0\u5206\u949F)\u548C\u8D39\u7528(\u6309\u5E95\u5EA7\u6BCF\u5C0F\u65F6\u4EF7),\u5B9A\u597D\u65B9\u6848\u540E\u8C03\u672C\u5DE5\u5177:\u5B83**\u4E0D\u4F1A\u81EA\u5DF1\u5EFA**,\u53EA\u8FD4\u56DE\u4E00\u6761\u786E\u8BA4\u94FE\u63A5 \u2014\u2014 \u628A\u94FE\u63A5\u7ED9\u7528\u6237,\u7528\u6237\u5728\u6D4F\u89C8\u5668\u91CC\u70B9\u300C\u5EFA\u8FD9\u4E2A\u73AF\u5883\u300D\u624D\u771F\u6B63\u63D0\u4EA4(\u82B1\u7684\u662F\u7528\u6237\u7684\u73AF\u5883\u989D\u5EA6,\u540C\u610F\u5FC5\u987B\u662F\u7528\u6237\u4EB2\u624B\u70B9)\u3002\u7528\u6237\u8BF4\u70B9\u597D\u4E86 \u2192 \u7528 tb_env_recipes \u67E5\u72B6\u6001\u3001\u76EF\u9A8C\u8BC1;\u5931\u8D25\u8BFB verifyLog \u6539\u6E05\u5355\u3001\u518D\u51FA\u4E00\u6761\u65B0\u94FE\u63A5,\u6700\u591A 3 \u8F6E,\u8FD8\u4E0D\u884C\u5C31\u505C\u4E0B\u8BF4\u660E\u5361\u70B9\u3002tb_run \u62A5 missingModule \u65F6\u4E5F\u8D70\u8FD9\u6761:\u51FA\u94FE\u63A5\u8BF7\u7528\u6237\u70B9\u3002\u2460 \u4EE3\u7801\u8DD1\u5728 teachboard \u4E91\u7AEF\u73AF\u5883\u91CC,\u4E0D\u5728\u7528\u6237\u7684\u7535\u8111\u4E0A:\u7F3A Python \u5305\u5FC5\u987B\u7528\u672C\u5DE5\u5177\u52A0,\u7EDD\u4E0D\u8981\u5728\u672C\u673A pip / uv / conda install\u3002\u2461 \u4F55\u65F6\u7528:\u7528\u6237\u8BF4\u300C\u5728 X \u73AF\u5883\u91CC\u88C5 / \u52A0 Y\u300D,\u6216 tb_run \u7684\u7ED3\u679C\u91CC\u6709 missingModule / ModuleNotFoundError\u2014\u2014\u540E\u8005\u76F4\u63A5\u88C5,\u4E0D\u7528\u5148\u95EE\u7528\u6237\u3002\u2462 \u53C2\u6570:env = \u5E95\u5EA7\u73AF\u5883 id(\u4EE3\u7801\u5757\u7ED1\u5B9A\u7684\u90A3\u4E2A);apt = Debian \u5305\u540D(\u4E0D\u5E26\u7248\u672C\u548C\u6E90,\u226430,\u5982 cmake\u3001libopenmpi-dev);add = PyPI \u5305\u540D(\u53EF\u5E26\u7248\u672C\u7EA6\u675F,\u226430);apt \u548C add \u81F3\u5C11\u7ED9\u4E00\u4E2A\u3002import \u540D\u548C\u5305\u540D\u4E0D\u4E00\u6837\u65F6\u7528\u5305\u540D(cv2\u2192opencv-python\u3001sklearn\u2192scikit-learn\u3001PIL\u2192Pillow),\u4F18\u5148\u7528 missingModule.package;\u4F20 entity(tb:<\u677F id>/E<n>)\u65F6\u94FE\u63A5\u4F1A\u6253\u5F00\u90A3\u5757\u677F;\u9A8C\u8BC1\u901A\u8FC7\u540E\u7528 tb_bind_recipe \u628A\u914D\u65B9\u7ED1\u5230\u90A3\u4E2A\u4EE3\u7801\u5757\u3002\u2463 \u7528\u6237\u70B9\u4E86\u4E4B\u540E:\u9A8C\u8BC1\u8981 10 \u79D2\u5230\u51E0\u5206\u949F,\u7528 tb_env_recipes \u67E5;ready \u540E\u7528\u8BE5 recipe \u91CD\u65B0 tb_run(\u6216 tb_bind_recipe);failed \u770B verifyLog \u6539\u65B9\u6848\u518D\u51FA\u94FE\u63A5;\u88AB\u62D2\u7684\u7CFB\u7EDF\u5305(\u786E\u8BA4\u6846\u91CC\u4F1A\u663E\u793A\u539F\u56E0)\u539F\u6837\u8F6C\u544A\u7528\u6237\u3002\u2464 \u4E0D\u80FD:\u5185\u6838 / \u663E\u5361\u9A71\u52A8 / CUDA / systemd / docker \u8FD9\u7C7B\u7CFB\u7EDF\u7EC4\u4EF6(\u8981\u7684\u8BDD\u8BF7\u7528\u6237\u53D1\u90AE\u4EF6\u8054\u7CFB\u6211\u4EEC);\u4E5F\u4E0D\u80FD\u6539\u5E95\u5EA7\u91CC\u5DF2\u6709 Python \u5305\u7684\u7248\u672C(\u53EA\u52A0\u4E0D\u6539)\u3002";
 function registerRecipeTools(server2, d7) {
   const call = (method, path6, body) => d7.client.call(method, path6, body, { agent: true });
   const humanErr = (e6) => {
@@ -86865,11 +86866,12 @@ function registerRecipeTools(server2, d7) {
         apt: external_exports.array(external_exports.string().min(1).max(100)).max(30).optional().describe("Debian \u7CFB\u7EDF\u5305\u540D(\u4E0D\u5E26\u7248\u672C\u548C\u6E90),\u226430 \u4E2A"),
         add: external_exports.array(external_exports.string().min(1).max(200)).max(30).optional().describe("PyPI \u5305\u540D(\u53EF\u5E26\u7248\u672C\u7EA6\u675F),\u226430 \u4E2A;apt \u548C add \u81F3\u5C11\u4E00\u4E2A"),
         commands: external_exports.array(external_exports.string().min(1).max(400)).max(10).optional().describe("\u88C5\u5305\u540E\u8981\u8DD1\u7684\u547D\u4EE4(\u53EF\u9009),\u226410 \u6761\u3001\u5404 \u2264400 \u5B57"),
-        name: external_exports.string().max(80).optional().describe("\u914D\u65B9\u540D(\u53EF\u9009)"),
-        entity: external_exports.string().optional().describe("\u89E6\u53D1\u5B89\u88C5\u7684\u4EE3\u7801\u5757 tb:<\u677F id>/E<n>;ready \u540E\u81EA\u52A8\u7ED1\u5B9A")
+        name: external_exports.string().max(60).optional().describe("\u73AF\u5883\u540D(\u53EF\u9009,\u226460)"),
+        reason: external_exports.string().max(300).optional().describe("\u4E00\u53E5\u8BDD\u8BF4\u660E\u4E3A\u4EC0\u4E48\u8981\u8FD9\u4E2A\u73AF\u5883(\u663E\u793A\u5728\u786E\u8BA4\u6846\u91CC,\u2264300)"),
+        entity: external_exports.string().optional().describe("\u8981\u7528\u8FD9\u4E2A\u73AF\u5883\u7684\u4EE3\u7801\u5757 tb:<\u677F id>/E<n>;\u94FE\u63A5\u4F1A\u6253\u5F00\u90A3\u5757\u677F")
       }
     },
-    async ({ env: env3, apt, add, commands: commands6, name, entity }, extra) => {
+    async ({ env: env3, apt, add, commands: commands6, name, reason, entity }, extra) => {
       if (!ENV_ID_RE.test(env3)) return textOut4("\u73AF\u5883 id \u4E0D\u5408\u6CD5(\u7528 tb_list_envs \u67E5)");
       if (!apt?.length && !add?.length) return textOut4("apt(\u7CFB\u7EDF\u5305)\u548C add(Python \u5305)\u81F3\u5C11\u7ED9\u4E00\u4E2A");
       const badApt = (apt ?? []).filter((p3) => !APT_RE.test(p3));
@@ -86877,67 +86879,27 @@ function registerRecipeTools(server2, d7) {
       if (entity !== void 0 && !ENTITY_REF_RE2.test(entity)) {
         return textOut4("\u5143\u7D20\u7F16\u53F7\u5E94\u5199\u6210 tb:<8 \u4F4D\u677F id>/E<n>(\u5982 tb:1a2b3c4d/E12)");
       }
-      const token = extra?._meta?.progressToken;
-      let n2 = 0;
-      const progress = async (msg) => {
-        if (token === void 0 || token === null) return;
-        try {
-          await extra.sendNotification({
-            method: "notifications/progress",
-            params: { progressToken: token, progress: ++n2, message: msg }
-          });
-        } catch {
-        }
-      };
+      void extra;
+      const board = entity ? ENTITY_REF_RE2.exec(entity)?.[1] : void 0;
+      let id = "";
+      let expiresAt = "";
       try {
-        const body = {};
-        if (add?.length) body.add = add;
-        if (apt?.length) body.apt = apt;
-        if (commands6?.length) body.commands = commands6;
-        if (name) body.name = name;
-        const created = await call("POST", `envs/${encodeURIComponent(env3)}/recipes`, body);
-        let r7 = created.recipe ?? {};
-        const id = typeof r7.id === "string" ? r7.id : "";
-        if (!RECIPE_ID_RE.test(id)) return textOut4("\u670D\u52A1\u8FD4\u56DE\u7684\u914D\u65B9 id \u4E0D\u5408\u6CD5,\u7A0D\u540E\u7528 tb_env_recipes \u67E5");
-        await progress(`\u914D\u65B9 ${id}: ${String(r7.status)}`);
-        let failures = 0;
-        for (let waited = 0; r7.status === "verifying" && waited < RECIPE_MAX_MS; waited += RECIPE_POLL_MS) {
-          await d7.sleep(RECIPE_POLL_MS);
-          try {
-            const g6 = await call("GET", `recipes/${encodeURIComponent(id)}`);
-            r7 = g6.recipe ?? r7;
-            failures = 0;
-          } catch (e6) {
-            const st = e6 instanceof TbError ? e6.status : 0;
-            if (st === 401 || st === 404 || ++failures >= 3) {
-              return textOut4(`\u67E5\u8BE2\u914D\u65B9\u72B6\u6001\u5931\u8D25,\u914D\u65B9 id=${id},\u7A0D\u540E\u7528 tb_env_recipes \u67E5(env=${env3})${entity ? `
-\u9A8C\u8BC1\u5B8C\u6210\u540E\u7528 tb_bind_recipe \u7ED1\u5230 ${entity}` : ""}`);
-            }
-            continue;
-          }
-          await progress(`\u914D\u65B9 ${id}: ${String(r7.status)}(\u5DF2\u7B49 ${waited + RECIPE_POLL_MS} \u79D2)`);
-        }
-        if (r7.status === "ready") {
-          const secs = typeof r7.installSec === "number" ? `,\u5B89\u88C5\u7EA6 ${Math.round(r7.installSec)} \u79D2` : "";
-          const aptLine = Array.isArray(r7.apt) && r7.apt.length ? [`\u7CFB\u7EDF\u5305:${r7.apt.map(String).join(", ")}`] : [];
-          const out2 = [`\u914D\u65B9\u5C31\u7EEA recipeId=${id}(\u5E95\u5EA7 ${env3}${secs}),\u7528 recipe:"${id}" \u91CD\u65B0 tb_run \u5373\u53EF`, ...aptLine, ...lockSummary(r7.lock)];
-          if (entity) out2.push(await bindMsg(entity, id));
-          return textOut4(out2.join("\n"));
-        }
-        if (r7.status === "failed") {
-          const tail = logTail(r7.verifyLog);
-          return textOut4(
-            `\u914D\u65B9\u9A8C\u8BC1\u5931\u8D25 recipeId=${id}
-${tail ? `verifyLog \u672B\u5C3E:
-${tail}
-` : ""}\u6539\u914D\u65B9\u518D\u63D0\u4EA4(\u6362\u5305\u540D / \u7248\u672C,\u6216\u53BB\u6389\u51B2\u7A81\u7684\u5305)\u3002`
-          );
-        }
-        return textOut4(`\u8FD8\u5728\u9A8C\u8BC1,\u914D\u65B9 id=${id},\u7A0D\u540E\u7528 tb_env_recipes \u67E5(env=${env3})${entity ? `
-\u9A8C\u8BC1\u5B8C\u6210\u540E\u7528 tb_bind_recipe \u7ED1\u5230 ${entity}` : ""}`);
+        const body = { env: env3, ...apt?.length ? { apt } : {}, ...add?.length ? { add } : {}, ...commands6?.length ? { commands: commands6 } : {}, ...name ? { name } : {}, ...reason ? { reason } : {} };
+        const r7 = await call("POST", "agent/env-proposals", body);
+        id = typeof r7.id === "string" && /^[A-Za-z0-9_.-]{8,8000}$/.test(r7.id) ? r7.id : "";
+        expiresAt = typeof r7.expiresAt === "string" ? r7.expiresAt : "";
       } catch (e6) {
         return textOut4(humanErr(e6));
       }
+      if (!id) return textOut4("\u670D\u52A1\u6CA1\u6709\u8FD4\u56DE\u65B9\u6848 id,\u7A0D\u540E\u518D\u8BD5");
+      const validity = expiresAt ? `${expiresAt} \u524D\u6709\u6548` : "30 \u5206\u949F\u5185\u6709\u6548";
+      return textOut4([
+        `\u65B9\u6848\u5DF2\u5907\u597D,\u8FD8\u6CA1\u6709\u5EFA \u2014\u2014 \u8BF7\u7528\u6237\u6253\u5F00\u4E0B\u9762\u7684\u94FE\u63A5,\u6838\u5BF9\u540E\u70B9\u300C\u5EFA\u8FD9\u4E2A\u73AF\u5883\u300D(\u9A8C\u8BC1\u4F1A\u7528\u7528\u6237\u7684\u73AF\u5883\u989D\u5EA6;\u94FE\u63A5\u53EA\u5BF9\u8FD9\u4E2A\u7528\u6237\u6709\u6548,${validity}):`,
+        envProposalUrl(d7.base, id, board),
+        "",
+        `\u5E95\u5EA7 ${env3}${apt?.length ? ` \xB7 \u7CFB\u7EDF\u5305 ${apt.join(", ")}` : ""}${add?.length ? ` \xB7 Python \u5305 ${add.join(", ")}` : ""}${commands6?.length ? ` \xB7 \u547D\u4EE4 ${commands6.length} \u6761` : ""}`,
+        `\u7528\u6237\u8BF4\u70B9\u597D\u4E86 \u2192 tb_env_recipes env=${env3} \u67E5\u72B6\u6001\u3001\u76EF\u9A8C\u8BC1${entity ? `;ready \u540E tb_bind_recipe \u7ED1\u5230 ${entity}` : ""}\u3002`
+      ].join("\n"));
     }
   );
   server2.registerTool(
