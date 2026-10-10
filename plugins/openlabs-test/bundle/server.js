@@ -86461,7 +86461,7 @@ function registerEnvTools(server2, d7) {
     "tb_list_envs",
     {
       title: "List teachboard environments",
-      description: "\u5217\u51FA\u53EF\u7528\u7684\u4E91\u7AEF\u8FD0\u884C\u73AF\u5883(id\u3001GPU\u3001\u514D\u8D39/\u4ED8\u8D39\u3001\u72B6\u6001\u3001\u7ED9\u5B66\u4E60\u8005\u7684\u5EFA\u8BAE\u3001\u8BC4\u5206\u4EFB\u52A1\u4E0E\u8981\u5EFA\u7684\u533A\u6BB5\u5757)\u3002\u5199\u4EE3\u7801\u524D\u5148\u9009 env\u3002",
+      description: "\u5217\u51FA\u53EF\u7528\u7684\u4E91\u7AEF\u8FD0\u884C\u73AF\u5883(id\u3001GPU\u3001\u514D\u8D39/\u4ED8\u8D39\u3001\u72B6\u6001\u3001\u7ED9\u5B66\u4E60\u8005\u7684\u5EFA\u8BAE\u3001\u8BC4\u5206\u4EFB\u52A1\u4E0E\u8981\u5EFA\u7684\u533A\u6BB5\u5757),\u4EE5\u53CA\u4F60\u81EA\u5DF1\u5EFA\u7684\u300C\u6211\u7684\u73AF\u5883\u300D\u3002\u5199\u4EE3\u7801\u524D\u5148\u9009 env;\u73B0\u6210\u7684\u4E0D\u591F\u7528\u518D\u7528 tb_env_customize \u5EFA\u3002",
       inputSchema: {}
     },
     async () => {
@@ -86470,6 +86470,17 @@ function registerEnvTools(server2, d7) {
         const envs = Array.isArray(r7.envs) ? r7.envs : [];
         if (!envs.length) return textOut3("\u6682\u65F6\u6CA1\u6709\u53EF\u7528\u7684\u73AF\u5883");
         const out2 = [];
+        const mine = Array.isArray(r7.mine) ? r7.mine.filter(isObj4) : [];
+        if (mine.length) {
+          out2.push(`\u6211\u7684\u73AF\u5883(source customized,${mine.length} \u4E2A;\u7528\u6CD5:tb_run \u4F20 recipe=<id>,\u6216 tb_bind_recipe \u7ED1\u5230\u4EE3\u7801\u5757):`);
+          for (const m5 of mine) {
+            const apt = Array.isArray(m5.apt) && m5.apt.length ? ` \xB7 \u7CFB\u7EDF\u5305 ${m5.apt.map(String).join(", ")}` : "";
+            const pip = Array.isArray(m5.requested) && m5.requested.length ? ` \xB7 Python \u5305 ${m5.requested.map(String).join(", ")}` : "";
+            const secs = typeof m5.installSec === "number" ? ` \xB7 \u5B89\u88C5\u7EA6 ${Math.round(m5.installSec)} \u79D2` : "";
+            out2.push(`  ${String(m5.id ?? "")}${m5.name ? `\u300C${String(m5.name)}\u300D` : ""} \xB7 \u5E95\u5EA7 ${String(m5.baseEnvId ?? "?")} \xB7 ${String(m5.status ?? "?")}${apt}${pip}${secs}`);
+          }
+          out2.push("");
+        }
         for (const e6 of envs) {
           const rt = isObj4(e6.runtime) ? e6.runtime : {};
           const gpu = isObj4(rt.gpu) ? rt.gpu : null;
@@ -86569,7 +86580,8 @@ var ENV_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/;
 var RECIPE_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 var ENTITY_REF_RE2 = /^tb:([0-9a-f]{8})\/(E\d+)$/;
 var BIND_PENDING_RETRIES = 3;
-var CUSTOMIZE_DESC = "\u7ED9\u4E00\u4E2A\u73AF\u5883\u52A0 Python \u5305(\u73AF\u5883\u914D\u65B9)\u3002\u2460 \u4EE3\u7801\u8DD1\u5728 teachboard \u4E91\u7AEF\u73AF\u5883\u91CC,\u4E0D\u5728\u7528\u6237\u7684\u7535\u8111\u4E0A:\u7F3A Python \u5305\u5FC5\u987B\u7528\u672C\u5DE5\u5177\u52A0,\u7EDD\u4E0D\u8981\u5728\u672C\u673A pip / uv / conda install\u3002\u2461 \u4F55\u65F6\u7528:\u7528\u6237\u8BF4\u300C\u5728 X \u73AF\u5883\u91CC\u88C5 / \u52A0 Y\u300D,\u6216 tb_run \u7684\u7ED3\u679C\u91CC\u6709 missingModule / ModuleNotFoundError\u2014\u2014\u540E\u8005\u76F4\u63A5\u88C5,\u4E0D\u7528\u5148\u95EE\u7528\u6237\u3002\u2462 \u53C2\u6570:env = \u4EE3\u7801\u5757\u7ED1\u5B9A\u7684\u73AF\u5883 id;add = PyPI \u5305\u540D(\u53EF\u5E26\u7248\u672C\u7EA6\u675F);import \u540D\u548C\u5305\u540D\u4E0D\u4E00\u6837\u65F6\u7528\u5305\u540D(cv2\u2192opencv-python\u3001sklearn\u2192scikit-learn\u3001PIL\u2192Pillow),\u4F18\u5148\u7528 missingModule.package;\u4F20 entity(tb:<\u677F id>/E<n>)\u4F1A\u5728\u88C5\u597D\u540E\u628A\u914D\u65B9\u81EA\u52A8\u7ED1\u5230\u90A3\u4E2A\u4EE3\u7801\u5757\u3002\u2463 \u7ED3\u679C:\u9A8C\u8BC1\u8981 10 \u79D2\u5230\u51E0\u5206\u949F(\u672C\u5DE5\u5177\u6700\u591A\u7B49 4 \u5206\u949F);ready \u540E\u7528\u8BE5 recipe \u91CD\u65B0 tb_run;failed \u5C31\u770B verifyLog \u6539\u914D\u65B9\u518D\u63D0\u4EA4;\u8FD8\u5728\u9A8C\u8BC1\u4E0D\u7B97\u5931\u8D25,\u7A0D\u540E\u7528 tb_env_recipes \u67E5;apt_not_allowed \u539F\u6837\u8F6C\u544A\u7528\u6237\u3002\u2464 \u4E0D\u80FD:\u88C5 apt \u7CFB\u7EDF\u5305,\u4E5F\u4E0D\u80FD\u6539\u57FA\u7840\u73AF\u5883\u91CC\u5DF2\u6709\u5305\u7684\u7248\u672C(\u53EA\u52A0\u4E0D\u6539)\u3002";
+var APT_RE = /^[a-z0-9][a-z0-9+.-]{0,99}$/;
+var CUSTOMIZE_DESC = "\u5728\u4E00\u4E2A\u5E95\u5EA7\u73AF\u5883\u4E0A\u5EFA\u300C\u6211\u7684\u73AF\u5883\u300D(\u73AF\u5883\u914D\u65B9):\u52A0 Debian \u7CFB\u7EDF\u5305(apt)\u548C / \u6216 Python \u5305(add),\u53EF\u9644\u547D\u4EE4\u3002\u24EA \u89C4\u77E9(\u8BBE\u8BA1 \xA72):\u7528\u6237\u8BF4\u300C\u6211\u60F3\u5EFA\u4E2A X \u73AF\u5883\u300D\u300C\u6211\u60F3\u505A Y \u5B9E\u9A8C\u300D\u4E5F\u8D70\u8FD9\u91CC \u2014\u2014 \u5148\u4ECE\u76EE\u6807\u63A8\u65AD\u8981\u8DD1\u4EC0\u4E48\u3001\u8981\u54EA\u4E9B\u5E93 / \u7CFB\u7EDF\u5DE5\u5177 / \u663E\u5361;\u5148\u7528 tb_list_envs \u627E\u73B0\u6210\u7684(runtime.libs\u3001GPU\u3001tags \u80FD\u6EE1\u8DB3\u5C31\u63A8\u8350\u5B83,\u4E0D\u5EFA);\u5DEE\u4E00\u70B9\u624D\u5217\u65B9\u6848:\u5E95\u5EA7\u3001apt \u5305\u3001pip \u5305\u3001\u547D\u4EE4\u3001\u9A8C\u8BC1\u9884\u8BA1\u65F6\u957F(\u7CFB\u7EDF\u5305\u901A\u5E38\u5341\u51E0\u79D2\u5230\u51E0\u5206\u949F)\u548C\u8D39\u7528(\u6309\u5E95\u5EA7\u6BCF\u5C0F\u65F6\u4EF7),**\u7528\u6237\u660E\u786E\u540C\u610F\u540E**\u624D\u8C03\u672C\u5DE5\u5177;\u9A8C\u8BC1\u5931\u8D25\u8BFB verifyLog \u6539\u6E05\u5355\u518D\u8BD5,\u6700\u591A 3 \u8F6E,\u8FD8\u4E0D\u884C\u5C31\u505C\u4E0B\u8BF4\u660E\u5361\u70B9\u3002tb_run \u62A5 missingModule \u65F6\u76F4\u63A5\u52A0 Python \u5305,\u4E0D\u7528\u5148\u95EE\u3002\u2460 \u4EE3\u7801\u8DD1\u5728 teachboard \u4E91\u7AEF\u73AF\u5883\u91CC,\u4E0D\u5728\u7528\u6237\u7684\u7535\u8111\u4E0A:\u7F3A Python \u5305\u5FC5\u987B\u7528\u672C\u5DE5\u5177\u52A0,\u7EDD\u4E0D\u8981\u5728\u672C\u673A pip / uv / conda install\u3002\u2461 \u4F55\u65F6\u7528:\u7528\u6237\u8BF4\u300C\u5728 X \u73AF\u5883\u91CC\u88C5 / \u52A0 Y\u300D,\u6216 tb_run \u7684\u7ED3\u679C\u91CC\u6709 missingModule / ModuleNotFoundError\u2014\u2014\u540E\u8005\u76F4\u63A5\u88C5,\u4E0D\u7528\u5148\u95EE\u7528\u6237\u3002\u2462 \u53C2\u6570:env = \u5E95\u5EA7\u73AF\u5883 id(\u4EE3\u7801\u5757\u7ED1\u5B9A\u7684\u90A3\u4E2A);apt = Debian \u5305\u540D(\u4E0D\u5E26\u7248\u672C\u548C\u6E90,\u226430,\u5982 cmake\u3001libopenmpi-dev);add = PyPI \u5305\u540D(\u53EF\u5E26\u7248\u672C\u7EA6\u675F,\u226430);apt \u548C add \u81F3\u5C11\u7ED9\u4E00\u4E2A\u3002import \u540D\u548C\u5305\u540D\u4E0D\u4E00\u6837\u65F6\u7528\u5305\u540D(cv2\u2192opencv-python\u3001sklearn\u2192scikit-learn\u3001PIL\u2192Pillow),\u4F18\u5148\u7528 missingModule.package;\u4F20 entity(tb:<\u677F id>/E<n>)\u4F1A\u5728\u88C5\u597D\u540E\u628A\u914D\u65B9\u81EA\u52A8\u7ED1\u5230\u90A3\u4E2A\u4EE3\u7801\u5757\u3002\u2463 \u7ED3\u679C:\u9A8C\u8BC1\u8981 10 \u79D2\u5230\u51E0\u5206\u949F(\u672C\u5DE5\u5177\u6700\u591A\u7B49 4 \u5206\u949F);ready \u540E\u7528\u8BE5 recipe \u91CD\u65B0 tb_run;failed \u5C31\u770B verifyLog \u6539\u914D\u65B9\u518D\u63D0\u4EA4;\u8FD8\u5728\u9A8C\u8BC1\u4E0D\u7B97\u5931\u8D25,\u7A0D\u540E\u7528 tb_env_recipes \u67E5;\u88AB\u62D2\u7684\u7CFB\u7EDF\u5305\u539F\u6837\u8F6C\u544A\u7528\u6237\u3002\u2464 \u4E0D\u80FD:\u5185\u6838 / \u663E\u5361\u9A71\u52A8 / CUDA / systemd / docker \u8FD9\u7C7B\u7CFB\u7EDF\u7EC4\u4EF6(\u8981\u7684\u8BDD\u8BF7\u7528\u6237\u53D1\u90AE\u4EF6\u8054\u7CFB\u6211\u4EEC);\u4E5F\u4E0D\u80FD\u6539\u5E95\u5EA7\u91CC\u5DF2\u6709 Python \u5305\u7684\u7248\u672C(\u53EA\u52A0\u4E0D\u6539)\u3002";
 function registerRecipeTools(server2, d7) {
   const call = (method, path6, body) => d7.client.call(method, path6, body, { agent: true });
   const humanErr = (e6) => {
@@ -86590,8 +86602,17 @@ function registerRecipeTools(server2, d7) {
       if (code === "no_env") return "\u8FD9\u4E2A\u4EE3\u7801\u5757\u6CA1\u7ED1\u73AF\u5883,\u5148\u7ED9\u5B83\u7ED1 env \u624D\u80FD\u7ED1\u914D\u65B9";
       if (code === "bad_entity") return "\u5143\u7D20\u7F16\u53F7\u4E0D\u5BF9,\u5E94\u5199\u6210 tb:<\u677F id>/E<n>";
       if (code === "bad_recipe" && e6.status === 400) return `\u914D\u65B9\u4E0D\u5408\u6CD5${typeof data2.message === "string" ? `:${data2.message}` : ""}`;
+      if (code === "apt_not_allowed") return `${typeof data2.message === "string" ? data2.message : "\u8FD9\u4E2A\u7CFB\u7EDF\u5305\u4E0D\u80FD\u81EA\u5DF1\u88C5"}${typeof data2.contactEmail === "string" && !String(data2.message ?? "").includes(data2.contactEmail) ? `(\u8054\u7CFB:${data2.contactEmail})` : ""}
+\u628A\u8FD9\u6BB5\u539F\u6837\u544A\u8BC9\u7528\u6237,\u4E0D\u8981\u6362\u522B\u7684\u529E\u6CD5\u7ED5\u8FC7\u53BB\u3002`;
     }
     return d7.human(e6);
+  };
+  const recipeLine = (x) => {
+    const req = Array.isArray(x.requested) ? x.requested.map(String).join(", ") : "";
+    const apt = Array.isArray(x.apt) && x.apt.length ? ` \xB7 \u7CFB\u7EDF\u5305 ${x.apt.map(String).join(", ")}` : "";
+    const locks = Array.isArray(x.lock) ? `${x.lock.length} \u4E2A\u5305` : "\u672A\u9501\u5B9A";
+    const secs = typeof x.installSec === "number" ? ` \xB7 \u5B89\u88C5\u7EA6 ${Math.round(x.installSec)} \u79D2` : "";
+    return `${String(x.id)}${x.name ? `\u300C${x.name}\u300D` : ""} \xB7 \u5E95\u5EA7 ${String(x.baseEnvId ?? "?")} \xB7 ${String(x.status)}${apt} \xB7 Python \u5305 ${req || "-"} \xB7 lock ${locks}${secs} \xB7 \u66F4\u65B0 ${String(x.updatedAt ?? "?")}`;
   };
   const logTail = (log, max = 2048) => {
     const t = typeof log === "string" ? log : "";
@@ -86643,14 +86664,18 @@ function registerRecipeTools(server2, d7) {
       description: CUSTOMIZE_DESC,
       inputSchema: {
         env: external_exports.string().describe("\u4EE3\u7801\u5757\u7ED1\u5B9A\u7684\u73AF\u5883 id(\u89C1 tb_list_envs)"),
-        add: external_exports.array(external_exports.string().min(1).max(200)).min(1).max(30).describe("PyPI \u5305\u540D(\u53EF\u5E26\u7248\u672C\u7EA6\u675F),\u226430 \u4E2A"),
+        apt: external_exports.array(external_exports.string().min(1).max(100)).max(30).optional().describe("Debian \u7CFB\u7EDF\u5305\u540D(\u4E0D\u5E26\u7248\u672C\u548C\u6E90),\u226430 \u4E2A"),
+        add: external_exports.array(external_exports.string().min(1).max(200)).max(30).optional().describe("PyPI \u5305\u540D(\u53EF\u5E26\u7248\u672C\u7EA6\u675F),\u226430 \u4E2A;apt \u548C add \u81F3\u5C11\u4E00\u4E2A"),
         commands: external_exports.array(external_exports.string().min(1).max(400)).max(10).optional().describe("\u88C5\u5305\u540E\u8981\u8DD1\u7684\u547D\u4EE4(\u53EF\u9009),\u226410 \u6761\u3001\u5404 \u2264400 \u5B57"),
         name: external_exports.string().max(80).optional().describe("\u914D\u65B9\u540D(\u53EF\u9009)"),
         entity: external_exports.string().optional().describe("\u89E6\u53D1\u5B89\u88C5\u7684\u4EE3\u7801\u5757 tb:<\u677F id>/E<n>;ready \u540E\u81EA\u52A8\u7ED1\u5B9A")
       }
     },
-    async ({ env: env3, add, commands: commands6, name, entity }, extra) => {
+    async ({ env: env3, apt, add, commands: commands6, name, entity }, extra) => {
       if (!ENV_ID_RE.test(env3)) return textOut3("\u73AF\u5883 id \u4E0D\u5408\u6CD5(\u7528 tb_list_envs \u67E5)");
+      if (!apt?.length && !add?.length) return textOut3("apt(\u7CFB\u7EDF\u5305)\u548C add(Python \u5305)\u81F3\u5C11\u7ED9\u4E00\u4E2A");
+      const badApt = (apt ?? []).filter((p3) => !APT_RE.test(p3));
+      if (badApt.length) return textOut3(`\u8FD9\u4E9B\u4E0D\u662F\u5408\u6CD5\u7684 Debian \u5305\u540D(\u53EA\u5199\u5305\u540D,\u4E0D\u5E26\u7248\u672C / \u6E90 / \u7A7A\u683C):${badApt.join(", ")}`);
       if (entity !== void 0 && !ENTITY_REF_RE2.test(entity)) {
         return textOut3("\u5143\u7D20\u7F16\u53F7\u5E94\u5199\u6210 tb:<8 \u4F4D\u677F id>/E<n>(\u5982 tb:1a2b3c4d/E12)");
       }
@@ -86667,7 +86692,9 @@ function registerRecipeTools(server2, d7) {
         }
       };
       try {
-        const body = { add };
+        const body = {};
+        if (add?.length) body.add = add;
+        if (apt?.length) body.apt = apt;
         if (commands6?.length) body.commands = commands6;
         if (name) body.name = name;
         const created = await call("POST", `envs/${encodeURIComponent(env3)}/recipes`, body);
@@ -86693,7 +86720,9 @@ function registerRecipeTools(server2, d7) {
           await progress(`\u914D\u65B9 ${id}: ${String(r7.status)}(\u5DF2\u7B49 ${waited + RECIPE_POLL_MS} \u79D2)`);
         }
         if (r7.status === "ready") {
-          const out2 = [`\u914D\u65B9\u5C31\u7EEA recipeId=${id}(\u73AF\u5883 ${env3}),\u7528 recipe:"${id}" \u91CD\u65B0 tb_run \u5373\u53EF`, ...lockSummary(r7.lock)];
+          const secs = typeof r7.installSec === "number" ? `,\u5B89\u88C5\u7EA6 ${Math.round(r7.installSec)} \u79D2` : "";
+          const aptLine = Array.isArray(r7.apt) && r7.apt.length ? [`\u7CFB\u7EDF\u5305:${r7.apt.map(String).join(", ")}`] : [];
+          const out2 = [`\u914D\u65B9\u5C31\u7EEA recipeId=${id}(\u5E95\u5EA7 ${env3}${secs}),\u7528 recipe:"${id}" \u91CD\u65B0 tb_run \u5373\u53EF`, ...aptLine, ...lockSummary(r7.lock)];
           if (entity) out2.push(await bindMsg(entity, id));
           return textOut3(out2.join("\n"));
         }
@@ -86717,23 +86746,17 @@ ${tail}
     "tb_env_recipes",
     {
       title: "List environment recipes",
-      description: "\u5217\u51FA\u67D0\u4E2A\u73AF\u5883\u4E0B\u4F60\u7684\u914D\u65B9(id\u3001\u72B6\u6001\u3001\u8BF7\u6C42\u7684\u5305\u3001lock \u6570\u3001\u66F4\u65B0\u65F6\u95F4)\u3002tb_env_customize \u8D85\u65F6\u6CA1\u7B49\u5230\u7ED3\u679C\u65F6\u7528\u5B83\u67E5\u3002",
-      inputSchema: { env: external_exports.string().describe("\u73AF\u5883 id(\u89C1 tb_list_envs)") }
+      description: "\u5217\u51FA\u4F60\u7684\u73AF\u5883\u914D\u65B9(\u300C\u6211\u7684\u73AF\u5883\u300D:id\u3001\u5E95\u5EA7\u3001\u72B6\u6001\u3001\u7CFB\u7EDF\u5305\u3001Python \u5305\u3001lock \u6570\u3001\u5B89\u88C5\u8017\u65F6)\u3002\u4E0D\u5E26 env = \u6240\u6709\u5E95\u5EA7;tb_env_customize \u8D85\u65F6\u6CA1\u7B49\u5230\u7ED3\u679C\u65F6\u7528\u5B83\u67E5\u3002",
+      inputSchema: { env: external_exports.string().optional().describe("\u5E95\u5EA7\u73AF\u5883 id(\u89C1 tb_list_envs);\u4E0D\u586B = \u5168\u90E8") }
     },
     async ({ env: env3 }) => {
-      if (!ENV_ID_RE.test(env3)) return textOut3("\u73AF\u5883 id \u4E0D\u5408\u6CD5(\u7528 tb_list_envs \u67E5)");
+      if (env3 !== void 0 && !ENV_ID_RE.test(env3)) return textOut3("\u73AF\u5883 id \u4E0D\u5408\u6CD5(\u7528 tb_list_envs \u67E5)");
       try {
-        const r7 = await call("GET", `envs/${encodeURIComponent(env3)}/recipes`);
+        const r7 = await call("GET", env3 ? `envs/${encodeURIComponent(env3)}/recipes` : "recipes");
         const list2 = Array.isArray(r7.recipes) ? r7.recipes : [];
-        if (!list2.length) return textOut3(`${env3} \u4E0B\u8FD8\u6CA1\u6709\u914D\u65B9`);
-        const out2 = [`${env3} \u7684\u914D\u65B9(${list2.length} \u4E2A):`];
-        for (const x of list2) {
-          const req = Array.isArray(x.requested) ? x.requested.map(String).join(", ") : "";
-          const locks = Array.isArray(x.lock) ? `${x.lock.length} \u4E2A\u5305` : "\u672A\u9501\u5B9A";
-          out2.push(
-            `${String(x.id)}${x.name ? `\u300C${x.name}\u300D` : ""} \xB7 ${String(x.status)} \xB7 \u8BF7\u6C42 ${req || "-"} \xB7 lock ${locks} \xB7 \u66F4\u65B0 ${String(x.updatedAt ?? "?")}`
-          );
-        }
+        if (!list2.length) return textOut3(env3 ? `${env3} \u4E0B\u8FD8\u6CA1\u6709\u914D\u65B9` : "\u4F60\u8FD8\u6CA1\u6709\u81EA\u5DF1\u7684\u73AF\u5883(\u914D\u65B9)");
+        const out2 = [`${env3 ? `${env3} \u7684` : "\u4F60\u7684\u5168\u90E8"}\u914D\u65B9(${list2.length} \u4E2A):`];
+        for (const x of list2) out2.push(recipeLine(x));
         return textOut3(out2.join("\n"));
       } catch (e6) {
         return textOut3(humanErr(e6));

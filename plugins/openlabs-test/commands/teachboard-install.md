@@ -1,6 +1,6 @@
 ---
 name: teachboard-install
-description: 给白板的代码环境加装 Python 包(验证通过后绑到代码块或运行时传 recipe 才生效)
+description: 建「我的环境」:在白板的代码环境上加系统包(apt)和 Python 包(验证通过后绑到代码块或运行时传 recipe 才生效)
 ---
 
 <!-- AUTO-GENERATED from commands-src/teachboard-install.md — do not edit. Run `pnpm gen:commands`. -->
@@ -23,4 +23,4 @@ description: 给白板的代码环境加装 Python 包(验证通过后绑到代�
 - 失败 → 把失败原因(verifyLog 末尾)讲给学员,建议换包名 / 版本后重试。
 - 还在验证 → 说明还没好,稍后用 `tb_env_recipes` 查。
 
-**边界**:返回 `apt_not_allowed`(要装系统包)→ 把工具给的说明和联系方式**原样**显示给学员,不要换别的办法绕过去;「还没连上」→ 先 /openlabs-test connect;402 → 原话转达。
+**边界**:系统包写进 `apt`(Debian 包名,不带版本);内核 / 显卡驱动 / CUDA / systemd / docker 这类装不了 —— 工具拒绝时把它给的说明**原样**告诉学员(要的话发邮件联系我们),不要换别的办法绕过去;「还没连上」→ 先 /openlabs-test connect;402 → 原话转达。
