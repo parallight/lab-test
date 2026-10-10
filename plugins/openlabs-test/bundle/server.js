@@ -86927,15 +86927,26 @@ function registerRecipeTools(server2, d7) {
     "tb_bind_recipe",
     {
       title: "Bind a recipe to a code block",
-      description: "\u628A\u4E00\u4E2A ready \u7684\u73AF\u5883\u914D\u65B9\u7ED1\u5230\u677F\u4E0A\u7684\u4EE3\u7801\u5757(\u7ED1\u5B9A\u662F\u6392\u961F\u7684,\u7528\u6237\u6253\u5F00\u677F\u540E\u751F\u6548;\u4E4B\u540E \u25B6 \u4F1A\u5E26\u4E0A,\u73B0\u5728 tb_run \u8BF7\u663E\u5F0F\u4F20 recipe);recipe \u4F20 null \u6E05\u9664\u3002\u914D\u65B9\u7684\u57FA\u7840\u73AF\u5883\u5FC5\u987B\u7B49\u4E8E\u5757\u7684 env\u3002",
+      description: "\u628A\u4E00\u4E2A ready \u7684\u73AF\u5883\u914D\u65B9\u7ED1\u5230\u677F\u4E0A\u7684\u4EE3\u7801\u5757(\u7ED1\u5B9A\u662F\u6392\u961F\u7684,\u7528\u6237\u6253\u5F00\u677F\u540E\u751F\u6548;\u4E4B\u540E \u25B6 \u4F1A\u5E26\u4E0A,\u73B0\u5728 tb_run \u8BF7\u663E\u5F0F\u4F20 recipe);recipe \u4F20 null \u6E05\u9664\u3002\u914D\u65B9\u7684\u57FA\u7840\u73AF\u5883\u5FC5\u987B\u7B49\u4E8E\u5757\u7684 env\u3002\u53EA\u7ED9 boardId \u4E0D\u7ED9 entity = \u628A\u8FD9\u4E2A\u914D\u65B9\u8BBE\u4E3A\u6574\u5757\u677F\u7684\u9ED8\u8BA4\u73AF\u5883:\u4E4B\u540E\u65B0\u5EFA\u7684\u4EE3\u7801\u5757\u90FD\u7528\u5B83(\u5DF2\u6709\u7684\u5757\u4E0D\u53D8);\u6E05\u9664\u677F\u9ED8\u8BA4\u7528 tb_bind_env boardId=\u2026 env=null\u3002",
       inputSchema: {
-        entity: external_exports.string().describe("\u4EE3\u7801\u5757\u7F16\u53F7 tb:<8 \u4F4D\u677F id>/E<n>"),
-        recipe: external_exports.string().nullable().describe("\u914D\u65B9 id;null = \u6E05\u9664")
+        entity: external_exports.string().optional().describe("\u4EE3\u7801\u5757\u7F16\u53F7 tb:<8 \u4F4D\u677F id>/E<n>;\u4E0D\u4F20 + \u7ED9 boardId = \u8BBE\u677F\u9ED8\u8BA4"),
+        boardId: external_exports.string().optional().describe("\u8BBE\u677F\u9ED8\u8BA4\u65F6\u7ED9 8 \u4F4D\u677F id"),
+        recipe: external_exports.string().nullable().describe("\u914D\u65B9 id;null = \u6E05\u9664(\u53EA\u5BF9\u4EE3\u7801\u5757)")
       }
     },
-    async ({ entity, recipe }) => {
+    async ({ entity, boardId, recipe }) => {
       if (recipe !== null && !RECIPE_ID_RE.test(recipe)) return textOut4("\u914D\u65B9 id \u4E0D\u5408\u6CD5(\u7528 tb_env_recipes \u67E5)");
-      return textOut4(await bindMsg(entity, recipe));
+      if (entity !== void 0) return textOut4(await bindMsg(entity, recipe));
+      if (boardId === void 0) return textOut4("\u7ED9 entity(\u7ED1\u5230\u4E00\u4E2A\u4EE3\u7801\u5757)\u6216 boardId(\u8BBE\u4E3A\u6574\u5757\u677F\u7684\u9ED8\u8BA4\u73AF\u5883)");
+      if (!BOARD_ID_RE2.test(boardId)) return textOut4("\u677F id \u5E94\u662F 8 \u4F4D\u5341\u516D\u8FDB\u5236(\u7528 tb_list_boards \u67E5)");
+      if (recipe === null) return textOut4(`\u6E05\u9664\u677F\u9ED8\u8BA4\u7528 tb_bind_env boardId=${boardId} env=null`);
+      try {
+        await call("POST", `agent/boards/${boardId}/bind-recipe`, { board: true, recipe });
+        return textOut4(`\u5DF2\u6392\u961F\u628A\u914D\u65B9 ${recipe} \u8BBE\u4E3A\u677F ${boardId} \u7684\u9ED8\u8BA4\u73AF\u5883,\u7528\u6237\u6253\u5F00\u677F\u540E\u751F\u6548:\u4E4B\u540E\u65B0\u5EFA\u7684\u4EE3\u7801\u5757\u90FD\u7528\u5B83,\u5DF2\u6709\u7684\u5757\u4E0D\u53D8(\u8981\u6362\u5C31\u9010\u4E2A tb_bind_recipe entity=\u2026)\u3002`);
+      } catch (e6) {
+        if (e6 instanceof TbError && e6.status === 429) return textOut4("\u8FD9\u5757\u677F\u6392\u961F\u7684\u6B65\u9AA4\u592A\u591A\u4E86,\u8BF7\u7528\u6237\u5148\u6253\u5F00\u8FD9\u5757\u677F\u8BA9\u5B83\u4EEC\u843D\u5730,\u518D\u8BBE\u9ED8\u8BA4");
+        return textOut4(humanErr(e6));
+      }
     }
   );
 }
