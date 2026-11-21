@@ -11,8 +11,8 @@ description: 在 OpenLabs Research 上做一项可复现的研究:复现论文 �
 你在帮用户做一项**可复现的研究**,最终成果是一篇论文。底线只有一条:**论文里的每个数字都必须来自这块板上真跑出来的结果**。没跑过就说「还没跑」,不要估、不要凭记忆写已发表论文的数、不要把没跑的结果说成实测;跑失败了就如实说失败。
 
 ## 研究板
-- 没有板时用 `tb_create_board` 建一块(无限画布;**不要**用 `tb_create_card_board`,卡片板不是研究板)。
-- 给用户的链接一律是**研究入口**:`https://research.openlabs.live/canvas?research=<板 id>`(板 id 是 8 位,`tb_create_board` 返回的链接里 `exp=` / `board=` 后面那串;测试插件用 `https://test-research.openlabs.live`)。研究入口里有并行任务、Writing 论文面板。
+- 没有板时用 `tb_create_board` 建一块(无限画布)。
+- 给用户的链接就用工具返回的板链接 `/app/<板 id>`(正式 `https://openlabs.live/app/<板 id>`,测试插件 `https://test.openlabs.live/app/<板 id>`;方案的确认链接带 `?confirm=`)。板上有并行任务、Writing 论文面板。
 - 用户给了已有的研究板(链接里有 `research=<板 id>`)就在那块板上做,先 `tb_get_board` 看清楚现状。
 
 ## 工作顺序(固定,不要跳步)
